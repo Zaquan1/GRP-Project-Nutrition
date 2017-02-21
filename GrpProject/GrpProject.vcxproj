@@ -119,6 +119,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AirPainter.cpp" />
+    <ClCompile Include="Color.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Color.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

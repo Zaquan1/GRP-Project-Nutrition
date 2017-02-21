@@ -3,13 +3,58 @@
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 #include <Windows.h>
-#include <mmsystem.h>
-#include <mciapi.h>
+#include "Color.h"
+
 //these two headers are already included in the <Windows.h> header
 #pragma comment(lib, "Winmm.lib")
 
 using namespace cv;
 using namespace std;
+
+void ColorDetect(Mat HSVImage, Color* coloredObject, Mat* display)
+{
+	Mat temp;
+
+	inRange(HSVImage, coloredObject->getHSVMin(), coloredObject->getHSVMax(), temp);
+
+
+	erode(temp, temp, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
+	dilate(temp, temp, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
+
+	//morphological closing (removes small holes from the foreground)
+	erode(temp, temp, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
+	dilate(temp, temp, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
+
+	imshow(coloredObject->getName(), temp);
+	Moments oMoments = moments(temp);
+
+	double dM01 = oMoments.m01;
+	double dM10 = oMoments.m10;
+	double dArea = oMoments.m00;
+
+	if (dArea == 0)
+	{
+		return;
+	}
+
+	int posX, posY;
+
+	if (dArea > 10000)
+	{
+
+		//calculate the position of the ball
+		posX = dM10 / dArea;
+		posY = dM01 / dArea;
+		cout << "im in" << endl;
+		if (posX >= 0 && posY >= 0 && coloredObject->getposX() >= 0 && coloredObject->getposY() >= 0)
+		{
+			line(*display, Point(posX, posY), Point(coloredObject->getposX(), coloredObject->getposY()), coloredObject->getColor(), 10);
+		}
+		coloredObject->setposX(posX);
+		coloredObject->setposY(posY);
+	}
+}
+
 
 int main(int argc, char** argv)
 {
@@ -21,53 +66,26 @@ int main(int argc, char** argv)
 		return -1;
 	}
 
-	namedWindow("Control", CV_WINDOW_AUTOSIZE); //create a window called "Control"
-
-	int iLowH = 170;
-	int iHighH = 179;
-
-	int iLowS = 150;
-	int iHighS = 255;
-
-	int iLowV = 60;
-	int iHighV = 255;
-
-	//Create trackbars in "Control" window
-	createTrackbar("LowH", "Control", &iLowH, 179); //Hue (0 - 179)
-	createTrackbar("HighH", "Control", &iHighH, 179);
-
-	createTrackbar("LowS", "Control", &iLowS, 255); //Saturation (0 - 255)
-	createTrackbar("HighS", "Control", &iHighS, 255);
-
-	createTrackbar("LowV", "Control", &iLowV, 255);//Value (0 - 255)
-	createTrackbar("HighV", "Control", &iHighV, 255);
-
-	int iLastXr = -1;
-	int iLastYr = -1;
-	int iLastXb = -1;
-	int iLastYb = -1;
-
-	//Capture a temporary image from the camera
 	Mat imgTmp;
 	cap.read(imgTmp);
 
 	//Create a black image with the size as the camera output
 	Mat imgLines = Mat::zeros(imgTmp.size(), CV_8UC3);;
-	
-	cout << imgTmp.rows<< endl;
 
-	int playRedFlag = 0;
-	int playBlueFlag = 0;
-	//cameraFeed.copyTo(test);
-	//test.setTo(Scalar(0, 0, 0));
+	cout << imgTmp.rows << endl;
+
+	Color red("Red", Scalar(170, 150, 60), Scalar(179, 255, 255), Scalar(0, 0, 255));
+	Color blue("Blue", Scalar(110, 150, 150), Scalar(130, 255, 255), Scalar(255, 0, 0));
+	Color green("Green", Scalar(34, 50, 50), Scalar(80, 220, 200), Scalar(0, 255, 0));
+	Color yellow("Yellow", Scalar(20, 124, 123), Scalar(30, 256, 256), Scalar(0, 255, 255));
+	std::vector<Color> allColor{ red,blue,green,yellow };
+
 
 	while (true)
 	{
 		Mat imgOriginal;
 		Mat imgLinestest = Mat::zeros(imgTmp.size(), CV_8UC3);
 		bool bSuccess = cap.read(imgOriginal); // read a new frame from video
-
-
 
 		if (!bSuccess) //if not success, break loop
 		{
@@ -76,81 +94,15 @@ int main(int argc, char** argv)
 		}
 
 		Mat imgHSV;
-
 		cvtColor(imgOriginal, imgHSV, COLOR_BGR2HSV); //Convert the captured frame from BGR to HSV
 
-		Mat red;
-		Mat blue;
+													  //for (Color c : allColor)
+													  //{
+													  //ColorDetect(imgHSV, &c, &imgLines);
+													  //}
+		ColorDetect(imgHSV, &allColor[1], &imgLines);
 
-		inRange(imgHSV, Scalar(iLowH, iLowS, iLowV), Scalar(iHighH, iHighS, iHighV), red); //Threshold red
-		inRange(imgHSV, Scalar(110, 150, 150), Scalar(130, 255, 255), blue); //Threshold blue
-
-																			 //morphological opening (removes small objects from the foreground)
-		erode(red, red, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
-		dilate(red, red, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
-
-		//morphological closing (removes small holes from the foreground)
-		dilate(red, red, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
-		erode(red, red, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
-
-		
-		//Calculate the moments of the thresholded image
-		Moments oMomentsRed = moments(red);
-
-		double dM01Red = oMomentsRed.m01;
-		double dM10Red = oMomentsRed.m10;
-		double dAreaRed = oMomentsRed.m00;
-
-		//moments for blue
-		Moments oMomentsBlue = moments(blue);
-
-		double dM01Blue = oMomentsBlue.m01;
-		double dM10Blue = oMomentsBlue.m10;
-		double dAreaBlue = oMomentsBlue.m00;
-
-		int posX, posY;
-
-		// if the area <= 10000, I consider that the there are no object in the image and it's because of the noise, the area is not zero 
-		if (dAreaRed > 10000)
-		{
-
-			//calculate the position of the ball
-			posX = dM10Red / dAreaRed;
-			posY = dM01Red / dAreaRed;
-
-			if (iLastXr >= 0 && iLastYr >= 0 && posX >= 0 && posY >= 0)
-			{
-				//Draw a red line from the previous point to the current point
-				line(imgLines, Point(posX, posY), Point(iLastXr, iLastYr), Scalar(0, 0, 255), 3);
-			}
-
-			iLastXr = posX;
-			iLastYr = posY;
-		}
-
-		if (dAreaBlue > 10000)
-		{
-
-			//calculate the position of the ball
-			posX = dM10Blue / dAreaBlue;
-			posY = dM01Blue / dAreaBlue;
-
-			if (iLastXb >= 0 && iLastYb >= 0 && posX >= 0 && posY >= 0)
-			{
-				//Draw a blue line from the previous point to the current point
-				line(imgLines, Point(posX, posY), Point(posX, posY), Scalar(255, 0, 0), 10);
-				line(imgLinestest, Point(posX, posY), Point(posX, posY), Scalar(255, 0, 0), 10);
-			}
-
-			iLastXb = posX;
-			iLastYb = posY;
-		}
-
-
-		imshow("Thresholded Image Blue", blue);
-		imshow("Thresholded Image Red", red); //show the thresholded image
-											  //imgOriginal = imgOriginal + imgLines;
-		imshow("Original", imgLinestest); //show the original image
+		imshow("Original", imgOriginal); //show the original image
 		imshow("ImageLines", imgLines);
 		if (waitKey(30) == 27) //wait for 'esc' key press for 30ms. If 'esc' key is pressed, break loop
 		{
@@ -158,6 +110,7 @@ int main(int argc, char** argv)
 			break;
 		}
 	}
+
 
 	return 0;
 }
