@@ -11,21 +11,22 @@
 using namespace cv;
 using namespace std;
 
-void ColorDetect(Mat HSVImage, Color* coloredObject, Mat* display)
+void ColorDetect(Mat HSVImage, Color &coloredObject, Mat &display)
 {
 	Mat temp;
+	inRange(HSVImage, coloredObject.getHSVMin(), coloredObject.getHSVMax(), temp);
+	blur(temp, temp, Size(10, 10));
+	//blur(imgOriginal, imgOriginal, Size(20, 20));
 
-	inRange(HSVImage, coloredObject->getHSVMin(), coloredObject->getHSVMax(), temp);
 
+	erode(temp, temp, getStructuringElement(MORPH_ELLIPSE, Size(3, 3)));
+	erode(temp, temp, getStructuringElement(MORPH_ELLIPSE, Size(3, 3)));
+	blur(temp, temp, Size(10, 10));
 
-	erode(temp, temp, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
-	dilate(temp, temp, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
+	dilate(temp, temp, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
+	dilate(temp, temp, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
 
-	//morphological closing (removes small holes from the foreground)
-	erode(temp, temp, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
-	dilate(temp, temp, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
-
-	imshow(coloredObject->getName(), temp);
+	imshow(coloredObject.getName(), temp);
 	Moments oMoments = moments(temp);
 
 	double dM01 = oMoments.m01;
@@ -39,19 +40,19 @@ void ColorDetect(Mat HSVImage, Color* coloredObject, Mat* display)
 
 	int posX, posY;
 
-	if (dArea > 10000)
+	if (dArea > 10000 && dArea < 360000)
 	{
 
 		//calculate the position of the ball
 		posX = dM10 / dArea;
 		posY = dM01 / dArea;
-		cout << "im in" << endl;
-		if (posX >= 0 && posY >= 0 && coloredObject->getposX() >= 0 && coloredObject->getposY() >= 0)
+		if (posX >= 0 && posY >= 0 && coloredObject.getposX() >= 0 && coloredObject.getposY() >= 0)
 		{
-			line(*display, Point(posX, posY), Point(coloredObject->getposX(), coloredObject->getposY()), coloredObject->getColor(), 10);
+			line(display, Point(posX, posY), Point(coloredObject.getposX(), coloredObject.getposY()), coloredObject.getColor(), 10);
 		}
-		coloredObject->setposX(posX);
-		coloredObject->setposY(posY);
+		
+		coloredObject.setposX(posX);
+		coloredObject.setposY(posY);
 	}
 }
 
@@ -78,14 +79,16 @@ int main(int argc, char** argv)
 	Color blue("Blue", Scalar(110, 150, 150), Scalar(130, 255, 255), Scalar(255, 0, 0));
 	Color green("Green", Scalar(34, 50, 50), Scalar(80, 220, 200), Scalar(0, 255, 0));
 	Color yellow("Yellow", Scalar(20, 124, 123), Scalar(30, 256, 256), Scalar(0, 255, 255));
+
 	std::vector<Color> allColor{ red,blue,green,yellow };
 
 
 	while (true)
 	{
+		// read a new frame from video
 		Mat imgOriginal;
 		Mat imgLinestest = Mat::zeros(imgTmp.size(), CV_8UC3);
-		bool bSuccess = cap.read(imgOriginal); // read a new frame from video
+		bool bSuccess = cap.read(imgOriginal); 
 
 		if (!bSuccess) //if not success, break loop
 		{
@@ -96,11 +99,11 @@ int main(int argc, char** argv)
 		Mat imgHSV;
 		cvtColor(imgOriginal, imgHSV, COLOR_BGR2HSV); //Convert the captured frame from BGR to HSV
 
-													  //for (Color c : allColor)
-													  //{
-													  //ColorDetect(imgHSV, &c, &imgLines);
-													  //}
-		ColorDetect(imgHSV, &allColor[1], &imgLines);
+		for (int i = 0; i < allColor.size(); i++)
+		{
+			ColorDetect(imgHSV, allColor[i], imgLines);
+		}
+		//ColorDetect(imgHSV, &allColor[1], &imgLines);
 
 		imshow("Original", imgOriginal); //show the original image
 		imshow("ImageLines", imgLines);
