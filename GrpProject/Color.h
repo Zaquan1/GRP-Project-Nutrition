@@ -12,6 +12,8 @@ public:
 	Color();
 	Color(String Name, Scalar Min, Scalar Max, Scalar Color);
 
+	void setName(String Name);
+
 	Scalar getHSVMin();
 	Scalar getHSVMax();
 	Scalar getColor();

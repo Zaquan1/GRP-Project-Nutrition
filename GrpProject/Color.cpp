@@ -2,7 +2,7 @@
 
 Color::Color()
 {
-	setName("object");
+	//setName("object");
 	setColor(Scalar(0, 0, 0));
 }
 
