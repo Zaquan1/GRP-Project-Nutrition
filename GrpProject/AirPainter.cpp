@@ -28,7 +28,6 @@ void backgroundFilter(Ptr<BackgroundSubtractor> &bg_model, Mat &mask, Mat &displ
 	// Copy source image to foreground image only in area with white mask
 	display.copyTo(foregroundImg, mask);
 	foregroundImg.copyTo(display);
-	cout << "in";
 }
 
 void ColorDetect(Mat HSVImage, Color &coloredObject, Mat &display)
