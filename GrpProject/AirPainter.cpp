@@ -200,6 +200,14 @@ void ColorManager(Mat &cameraFeed, Mat &HSV, Mat &threshold, Mat &drawingCanvas,
 	trackFilteredObject(colorObject, threshold, cameraFeed, drawingCanvas, drawingCanvasTemp);
 }
 
+void ColorArea(Mat &drawingCanvas, Object &color)
+{
+	Mat tmpHsv;
+	Mat tmpThreshold;
+	cvtColor(drawingCanvas, tmpHsv, COLOR_BGR2HSV);
+	inRange(tmpHsv, color.getHSVmin(), color.getHSVmax(), tmpThreshold);
+}
+
 int main(int argc, char* argv[])
 {
 	//if we would like to calibrate our filter values, set to true.
