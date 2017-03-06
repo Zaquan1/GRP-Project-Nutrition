@@ -206,6 +206,9 @@ void ColorArea(Mat &drawingCanvas, Object &color)
 	Mat tmpThreshold;
 	cvtColor(drawingCanvas, tmpHsv, COLOR_BGR2HSV);
 	inRange(tmpHsv, color.getHSVmin(), color.getHSVmax(), tmpThreshold);
+	Moments moment = moments(tmpThreshold);
+
+
 }
 
 int main(int argc, char* argv[])
