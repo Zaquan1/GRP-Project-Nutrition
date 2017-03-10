@@ -22,8 +22,8 @@
 
 //default capture width and height
 //640x480,1080x720,1920x1080
-const int FRAME_WIDTH = 1080;
-const int FRAME_HEIGHT = 720;
+const int FRAME_WIDTH = 640;
+const int FRAME_HEIGHT = 480;
 //max number of objects to be detected in frame
 const int MAX_NUM_OBJECTS = 50;
 //minimum and maximum object area
@@ -206,8 +206,11 @@ void ColorArea(Mat &drawingCanvas, Object &color)
 	Mat tmpThreshold;
 	cvtColor(drawingCanvas, tmpHsv, COLOR_BGR2HSV);
 	inRange(tmpHsv, color.getHSVmin(), color.getHSVmax(), tmpThreshold);
+	imshow("HSVTest", tmpHsv);
+	imshow(color.getType(), tmpThreshold);
 	Moments moment = moments(tmpThreshold);
-
+	color.setArea(moment.m00);
+	cout << color.getType() << ": " << color.getArea() << endl;
 
 }
 
@@ -238,7 +241,9 @@ int main(int argc, char* argv[])
 
 	//create background filtering object
 	Ptr<BackgroundSubtractor> bg_model = createBackgroundSubtractorMOG2().dynamicCast<BackgroundSubtractor>();
+	Object oriRed("red"), oriBlue("blue"), oriGreen("green"), oriYellow("yellow");
 
+	std::vector<Object> allColor{ oriRed,oriBlue,oriGreen,oriYellow };
 	// Create empy input img, foreground and background image and foreground mask.
 	Mat foregroundMask;
 
@@ -273,18 +278,24 @@ int main(int argc, char* argv[])
 		//we can use their member functions/information
 		Object blue("blue"), yellow("yellow"), red("red"), green("green");
 
+
+		//for low cpu process, hide ColorManager and backgroundFilter and uncomment drawline for area checking
+		/*
+		drawLine(100, 100, blue, drawingCanvas);
+		drawLine(200, 200, red, drawingCanvas);
+		drawLine(300, 300, yellow, drawingCanvas);
+		drawLine(400, 400, green, drawingCanvas);
+		*/
 		ColorManager(cameraFeed, HSV, threshold, drawingCanvas, drawingCanvasTemp, yellow);
 		ColorManager(cameraFeed, HSV, threshold, drawingCanvas, drawingCanvasTemp, green);
 		ColorManager(cameraFeed, HSV, threshold, drawingCanvas, drawingCanvasTemp, blue);
 		ColorManager(cameraFeed, HSV, threshold, drawingCanvas, drawingCanvasTemp, red);
 
-		//for low cpu process, hide ColorManager and backgroundFilter and uncomment drawline for area checking
-		/*
-		drawLine(200, 200, blue, drawingCanvas);
-		drawLine(300, 300, red, drawingCanvas);
-		drawLine(400, 400, yellow, drawingCanvas);
-		drawLine(500, 500, green, drawingCanvas);
-		*/
+
+		for (int i = 0; i < allColor.size(); i++)
+		{
+			ColorArea(drawingCanvas, allColor[i]);
+		}
 
 		drawingCanvasTemp = drawingCanvas + drawingCanvasTemp;
 
@@ -294,7 +305,7 @@ int main(int argc, char* argv[])
 
 		auto finish = std::chrono::high_resolution_clock::now();
 		double fps = std::chrono::duration_cast<std::chrono::nanoseconds>(finish - start).count() / 1000000; //fps in millisecond
-		std::cout << ((1 / fps) * 1000) << "fps\n";
+		std::cout << ((1 / fps) * 1000) << "fps\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
 
 		//std::cout << wait << "\n";
 

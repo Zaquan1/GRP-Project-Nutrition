@@ -42,7 +42,7 @@ Object::Object(string name) {
 		//and HSV max values
 
 		setHSVmin(Scalar(20, 124, 123));
-		setHSVmax(Scalar(30, 256, 256));
+		setHSVmax(Scalar(30, 255, 255));
 
 		//BGR value for Red:
 		setColor(Scalar(0, 255, 255));
