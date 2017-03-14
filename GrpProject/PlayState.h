@@ -26,11 +26,12 @@ public:
 	void draw();
 
 private:
-
-	void MattoSprite();
-
 	sf::Texture m_bgTex;
 	sf::Sprite m_bg;
+
+	AirPainter airPainter;
+
+	void MattoSprite();
 };
 
 #endif // PLAYSTATE_HPP

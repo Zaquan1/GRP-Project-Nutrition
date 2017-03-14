@@ -14,30 +14,31 @@
 #include "AirPainter.h"
 
 //names that will appear at the top of each window
-const string windowName = "Original Image";
-const string windowName1 = "HSV Image";
-const string windowName2 = "Thresholded Image";
-const string windowName3 = "After Morphological Operations";
-const string trackbarWindowName = "Trackbars";
+AirPainter::AirPainter() :AirPainter(640, 480) {}
 
 AirPainter::AirPainter(int frameWidth, int frameHeigth)
 {
-	FRAME_HEIGHT = frameHeigth;
 	FRAME_WIDTH = frameWidth;
-
+	FRAME_HEIGHT = frameHeigth;
+	MAX_OBJECT_AREA = FRAME_HEIGHT*FRAME_WIDTH / 3;
 	capture.open(0);
+	if (!capture.isOpened())
+	{
+		cout << "capture is not openned";
+	}
 	//set height and width of capture frame
 	capture.set(CV_CAP_PROP_FRAME_WIDTH, FRAME_WIDTH);
 	capture.set(CV_CAP_PROP_FRAME_HEIGHT, FRAME_HEIGHT);
 
 	capture.read(cameraFeed);
+	//imshow("test3", cameraFeed);
 	drawingCanvas = Mat::zeros(cameraFeed.size(), CV_8UC3);
 
 	//start an infinite loop where webcam feed is copied to cameraFeed matrix
 	//all of our operations will be performed within this loop
 
 	//create background filtering object
-	Ptr<BackgroundSubtractor> bg_model = createBackgroundSubtractorMOG2().dynamicCast<BackgroundSubtractor>();
+	bg_model = createBackgroundSubtractorMOG2().dynamicCast<BackgroundSubtractor>();
 
 	Object oriRed("red"), oriBlue("blue"), oriGreen("green"), oriYellow("yellow");
 	
@@ -132,13 +133,11 @@ void AirPainter::trackFilteredObject(Object theObject, Mat &drawingCanvasTemp) {
 	GaussianBlur(threshold, threshold, cv::Size(9, 9), 2, 2);
 
 	//imshow(theObject.getType (), threshold);
-
 	//find contours of filtered image using openCV findContours function
 	
 	findContours(threshold, contours, hierarchy, CV_RETR_CCOMP, CV_CHAIN_APPROX_SIMPLE);
 	
 	//use moments method to find our filtered object
-	double refArea = 0;
 	bool objectFound = false;
 	if (hierarchy.size() > 0) {
 		int numObjects = hierarchy.size();
@@ -148,12 +147,11 @@ void AirPainter::trackFilteredObject(Object theObject, Mat &drawingCanvasTemp) {
 			{
 				Moments moment = moments((cv::Mat)contours[index]);
 				double area = moment.m00;
-
 				//if the area is less than 20 px by 20px then it is probably just noise
 				//if the area is the same as the 3/2 of the image size, probably just a bad filter
 				//we only want the object with the largest area so we safe a reference area each
 				//iteration and compare it to the area in the next iteration.
-				if (area>MIN_OBJECT_AREA && area <MAX_OBJECT_AREA)
+				if (area>MIN_OBJECT_AREA && area < MAX_OBJECT_AREA)
 				{
 					Object object;
 					object.setXPos(moment.m10 / area);
@@ -169,7 +167,7 @@ void AirPainter::trackFilteredObject(Object theObject, Mat &drawingCanvasTemp) {
 			//let user know you found an object
 			if (objectFound == true) {
 				//draw object location on screen
-				//drawObject(objects, cameraFeed, contours, hierarchy);
+				drawObject(objects, cameraFeed, contours, hierarchy);
 				drawLine(objects, drawingCanvasTemp);
 			}
 
@@ -214,30 +212,27 @@ void AirPainter::ColorArea(Object &color)
 	//imshow(color.getType(), tmpThreshold);
 	Moments moment = moments(tmpThreshold);
 	color.setArea(moment.m00);
-	cout << color.getType() << ": " << color.getArea() << endl;
+	//cout << color.getType() << ": " << color.getArea() << endl;
 
 }
 
 void AirPainter::run()
 {
-	//if we would like to calibrate our filter values, set to true.
-	cvNamedWindow("Original Image", CV_WINDOW_NORMAL);
-	cvSetWindowProperty("Original Image", CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);
-	//open capture object at location zero (default location for webcam)
-	
-		auto start = std::chrono::high_resolution_clock::now();
+		//auto start = std::chrono::high_resolution_clock::now();
 		//store image to matrix
-		capture.read(cameraFeed);
+		//capture.read(cameraFeed);
+		capture >> cameraFeed;
+
+		if (!cameraFeed.data)
+		{
+			cout << "error taking video" << endl;
+			return;
+		}
 
 		Mat drawingCanvasTemp = Mat::zeros(cameraFeed.size(), CV_8UC3);
 
 		flip(cameraFeed, cameraFeed, 1);
 		src = cameraFeed;
-		if (!src.data)
-		{
-			cout << "error taking video";
-			return;
-		}
 
 		if (foregroundMask.empty()) {
 			foregroundMask.create(cameraFeed.size(), cameraFeed.type());
@@ -273,14 +268,16 @@ void AirPainter::run()
 
 		drawingCanvasTemp = drawingCanvas + drawingCanvasTemp;
 		showCanvas = drawingCanvasTemp;
+		//imshow("test", showCanvas);
+		
 		//show frames
 		//imshow("Original Image", cameraFeed);
 		//imshow("canvas", drawingCanvasTemp);
+		//waitKey(30);
 
-		auto finish = std::chrono::high_resolution_clock::now();
-		double fps = std::chrono::duration_cast<std::chrono::nanoseconds>(finish - start).count() / 1000000; //fps in millisecond
-		std::cout << ((1 / fps) * 1000) << "fps\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
+		//auto finish = std::chrono::high_resolution_clock::now();
+		//double fps = std::chrono::duration_cast<std::chrono::nanoseconds>(finish - start).count() / 1000000; //fps in millisecond
+		//std::cout << ((1 / fps) * 1000) << "fps\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
 		//std::cout << wait << "\n";
-		//while (waitKey(30) != 27) {}
 		
 }

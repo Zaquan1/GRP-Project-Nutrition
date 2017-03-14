@@ -9,11 +9,11 @@
 #include <SFML/Window/Event.hpp>
 
 PlayState::PlayState(StateMachine& machine, sf::RenderWindow& window, bool replace)
-	: State{ machine, window, replace }
+	: State{ machine, window, replace }, airPainter()
 {
-	m_bgTex.loadFromFile("img/play.png");
+	//m_bgTex.loadFromFile("img/play.png");
 
-	m_bg.setTexture(m_bgTex, true);
+	//m_bg.setTexture(m_bgTex, true);
 
 	std::cout << "PlayState Init" << std::endl;
 }
@@ -32,6 +32,9 @@ void PlayState::update()
 {
 	sf::Event event;
 
+	airPainter.run();
+	MattoSprite();
+	
 	while (m_window.pollEvent(event))
 	{
 		switch (event.type)
@@ -62,10 +65,37 @@ void PlayState::update()
 	}
 }
 
+void PlayState::MattoSprite()
+{
+	sf::Image image;
+	cv::Mat tempMat;
+
+	tempMat = airPainter.getCanvas();
+	cv::cvtColor(tempMat, tempMat, cv::COLOR_BGR2RGBA);
+	image.create(tempMat.cols, tempMat.rows, tempMat.ptr());
+	image.createMaskFromColor(sf::Color::Black);
+	if (!m_bgTex.loadFromImage(image))
+	{
+		cout << "error loading image to texture" << endl;
+	}
+	m_bg.setTexture(m_bgTex, true);
+}
+
 void PlayState::draw()
 {
 	// Clear the previous drawing
+	sf::Image test;
+	sf::Texture tex;
+	sf::Sprite temp;
+	cv::Mat tempMat;
+	tempMat = airPainter.getCanvas();
+	test.create(tempMat.cols/2, tempMat.rows/2, sf::Color(0, 200, 0, 255));
+	tex.loadFromImage(test);
+	
+	temp.setTexture(tex, true);
+
 	m_window.clear();
+	m_window.draw(temp);
 	m_window.draw(m_bg);
 	m_window.display();
 }
