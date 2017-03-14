@@ -10,25 +10,9 @@
 //FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 //LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 //IN THE SOFTWARE.
-#include <sstream>
-#include <string>
-#include <iostream>
-#include <vector>
-#include <windows.h>
-#include <thread>
-#include "Object.h"
-#include <chrono>
 
+#include "AirPainter.h"
 
-//default capture width and height
-//640x480,1080x720,1920x1080
-const int FRAME_WIDTH = 640;
-const int FRAME_HEIGHT = 480;
-//max number of objects to be detected in frame
-const int MAX_NUM_OBJECTS = 50;
-//minimum and maximum object area
-const int MIN_OBJECT_AREA = 1000;
-const int MAX_OBJECT_AREA = FRAME_HEIGHT*FRAME_WIDTH / 3;
 //names that will appear at the top of each window
 const string windowName = "Original Image";
 const string windowName1 = "HSV Image";
@@ -36,12 +20,32 @@ const string windowName2 = "Thresholded Image";
 const string windowName3 = "After Morphological Operations";
 const string trackbarWindowName = "Trackbars";
 
-vector< vector<Point> > contours;
-vector<Vec4i> hierarchy;
+AirPainter::AirPainter(int frameWidth, int frameHeigth)
+{
+	FRAME_HEIGHT = frameHeigth;
+	FRAME_WIDTH = frameWidth;
 
-//The following for canny edge detec
-Mat src;
+	capture.open(0);
+	//set height and width of capture frame
+	capture.set(CV_CAP_PROP_FRAME_WIDTH, FRAME_WIDTH);
+	capture.set(CV_CAP_PROP_FRAME_HEIGHT, FRAME_HEIGHT);
 
+	capture.read(cameraFeed);
+	drawingCanvas = Mat::zeros(cameraFeed.size(), CV_8UC3);
+
+	//start an infinite loop where webcam feed is copied to cameraFeed matrix
+	//all of our operations will be performed within this loop
+
+	//create background filtering object
+	Ptr<BackgroundSubtractor> bg_model = createBackgroundSubtractorMOG2().dynamicCast<BackgroundSubtractor>();
+
+	Object oriRed("red"), oriBlue("blue"), oriGreen("green"), oriYellow("yellow");
+	
+	allColor.push_back(oriRed);
+	allColor.push_back(oriBlue);
+	allColor.push_back(oriGreen);
+	allColor.push_back(oriYellow);
+}
 
 string intToString(int number) {
 
@@ -50,7 +54,8 @@ string intToString(int number) {
 	return ss.str();
 }
 
-void drawObject(vector<Object> theObjects, Mat &frame, vector< vector<Point> > contours, vector<Vec4i> hierarchy) {
+//temperory, for testting purpose
+void AirPainter::drawObject(vector<Object> theObjects, Mat &frame, vector< vector<Point> > contours, vector<Vec4i> hierarchy) {
 
 	for (int i = 0; i<theObjects.size(); i++) {
 		cv::drawContours(frame, contours, i, theObjects.at(i).getColor(), 3, 8, hierarchy);
@@ -75,12 +80,12 @@ void drawObject(vector<Object> theObjects, Mat &frame, vector< vector<Point> > c
 }
 
 //temperory, for testting purpose
-void drawLine(int x, int y, Object object, Mat &canvas)
+void AirPainter::drawLine(int x, int y, Object object, Mat &canvas)
 {
 	line(canvas, Point(x, y), Point(x, y), object.getColor(), 10);
 }
 
-void drawLine(vector<Object> theObjects, Mat &drawingCanvas, Mat &drawingCanvasTemp)
+void AirPainter::drawLine(vector<Object> theObjects, Mat &drawingCanvasTemp)
 {
 	for (int i = 0; i < theObjects.size(); i++) {
 		if (!(theObjects.at(i).getXPos() > FRAME_WIDTH / 2) && !(theObjects.at(i).getYPos() > FRAME_HEIGHT / 2))
@@ -106,8 +111,7 @@ void drawLine(vector<Object> theObjects, Mat &drawingCanvas, Mat &drawingCanvasT
 	}
 }
 
-
-void morphOps(Mat &thresh) {
+void AirPainter::morphOps(Mat &thresh) {
 
 	//create structuring element that will be used to "dilate" and "erode" image.
 	//the element chosen here is a 3px by 3px rectangle
@@ -122,7 +126,7 @@ void morphOps(Mat &thresh) {
 	dilate(thresh, thresh, dilateElement);
 }
 
-void trackFilteredObject(Object theObject, Mat &threshold, Mat &cameraFeed, Mat &drawingCanvas, Mat &drawingCanvasTemp) {
+void AirPainter::trackFilteredObject(Object theObject, Mat &drawingCanvasTemp) {
 	vector <Object> objects;
 	//these two vectors needed for output of findContours
 	GaussianBlur(threshold, threshold, cv::Size(9, 9), 2, 2);
@@ -165,8 +169,8 @@ void trackFilteredObject(Object theObject, Mat &threshold, Mat &cameraFeed, Mat 
 			//let user know you found an object
 			if (objectFound == true) {
 				//draw object location on screen
-				drawObject(objects, cameraFeed, contours, hierarchy);
-				drawLine(objects, drawingCanvas, drawingCanvasTemp);
+				//drawObject(objects, cameraFeed, contours, hierarchy);
+				drawLine(objects, drawingCanvasTemp);
 			}
 
 		}
@@ -176,31 +180,31 @@ void trackFilteredObject(Object theObject, Mat &threshold, Mat &cameraFeed, Mat 
 	}
 }
 
-void backgroundFilter(Ptr<BackgroundSubtractor> &bg_model, Mat &mask, Mat &display)
+void AirPainter::backgroundFilter()
 {
 	Mat foregroundImg;
-	bg_model->apply(display, mask, true ? -1 : 0);
+	bg_model->apply(cameraFeed, foregroundMask, true ? -1 : 0);
 
 	// smooth the mask to reduce noise in image
-	GaussianBlur(mask, mask, Size(11, 11), 3.5, 3.5);
+	GaussianBlur(foregroundMask, foregroundMask, Size(11, 11), 3.5, 3.5);
 
 	// threshold mask to saturate at black and white values
-	threshold(mask, mask, 10, 255, THRESH_BINARY);
+	cv::threshold(foregroundMask, foregroundMask, 10, 255, THRESH_BINARY);
 	foregroundImg = Scalar::all(0);
 	// Copy source image to foreground image only in area with white mask
-	display.copyTo(foregroundImg, mask);
-	foregroundImg.copyTo(display);
+	cameraFeed.copyTo(foregroundImg, foregroundMask);
+	foregroundImg.copyTo(cameraFeed);
 }
 
-void ColorManager(Mat &cameraFeed, Mat &HSV, Mat &threshold, Mat &drawingCanvas, Mat &drawingCanvasTemp, Object colorObject)
+void AirPainter::ColorManager(Mat &drawingCanvasTemp, Object colorObject)
 {
 	cvtColor(cameraFeed, HSV, COLOR_BGR2HSV);
 	inRange(HSV, colorObject.getHSVmin(), colorObject.getHSVmax(), threshold);
 	morphOps(threshold);
-	trackFilteredObject(colorObject, threshold, cameraFeed, drawingCanvas, drawingCanvasTemp);
+	trackFilteredObject(colorObject, drawingCanvasTemp);
 }
 
-void ColorArea(Mat &drawingCanvas, Object &color)
+void AirPainter::ColorArea(Object &color)
 {
 	Mat tmpHsv;
 	Mat tmpThreshold;
@@ -214,42 +218,13 @@ void ColorArea(Mat &drawingCanvas, Object &color)
 
 }
 
-int main(int argc, char* argv[])
+void AirPainter::run()
 {
 	//if we would like to calibrate our filter values, set to true.
 	cvNamedWindow("Original Image", CV_WINDOW_NORMAL);
 	cvSetWindowProperty("Original Image", CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);
-	//Matrix to store each frame of the webcam feed
-	Mat cameraFeed;
-	Mat threshold;
-	Mat HSV;
-	Mat test;
-	Mat drawingCanvas;
-	//video capture object to acquire webcam feed
-	VideoCapture capture;
 	//open capture object at location zero (default location for webcam)
-	capture.open(0);
-	//set height and width of capture frame
-	capture.set(CV_CAP_PROP_FRAME_WIDTH, FRAME_WIDTH);
-	capture.set(CV_CAP_PROP_FRAME_HEIGHT, FRAME_HEIGHT);
-
-	capture.read(cameraFeed);
-	drawingCanvas = Mat::zeros(cameraFeed.size(), CV_8UC3);
-
-	//start an infinite loop where webcam feed is copied to cameraFeed matrix
-	//all of our operations will be performed within this loop
-
-	//create background filtering object
-	Ptr<BackgroundSubtractor> bg_model = createBackgroundSubtractorMOG2().dynamicCast<BackgroundSubtractor>();
-	Object oriRed("red"), oriBlue("blue"), oriGreen("green"), oriYellow("yellow");
-
-	std::vector<Object> allColor{ oriRed,oriBlue,oriGreen,oriYellow };
-	// Create empy input img, foreground and background image and foreground mask.
-	Mat foregroundMask;
-
-
-	while (waitKey(30) != 27) {
-
+	
 		auto start = std::chrono::high_resolution_clock::now();
 		//store image to matrix
 		capture.read(cameraFeed);
@@ -257,19 +232,17 @@ int main(int argc, char* argv[])
 		Mat drawingCanvasTemp = Mat::zeros(cameraFeed.size(), CV_8UC3);
 
 		flip(cameraFeed, cameraFeed, 1);
-		test.setTo(Scalar(0, 0, 0));
-
 		src = cameraFeed;
 		if (!src.data)
 		{
-			return -1;
+			return;
 		}
 
 		if (foregroundMask.empty()) {
 			foregroundMask.create(cameraFeed.size(), cameraFeed.type());
 		}
 
-		backgroundFilter(bg_model, foregroundMask, cameraFeed);
+		backgroundFilter();
 
 
 		//convert frame from BGR to HSV colorspace
@@ -286,15 +259,15 @@ int main(int argc, char* argv[])
 		drawLine(300, 300, yellow, drawingCanvas);
 		drawLine(400, 400, green, drawingCanvas);
 		*/
-		ColorManager(cameraFeed, HSV, threshold, drawingCanvas, drawingCanvasTemp, yellow);
-		ColorManager(cameraFeed, HSV, threshold, drawingCanvas, drawingCanvasTemp, green);
-		ColorManager(cameraFeed, HSV, threshold, drawingCanvas, drawingCanvasTemp, blue);
-		ColorManager(cameraFeed, HSV, threshold, drawingCanvas, drawingCanvasTemp, red);
+		ColorManager(drawingCanvasTemp, yellow);
+		ColorManager(drawingCanvasTemp, green);
+		ColorManager(drawingCanvasTemp, blue);
+		ColorManager(drawingCanvasTemp, red);
 
 
 		for (int i = 0; i < allColor.size(); i++)
 		{
-			ColorArea(drawingCanvas, allColor[i]);
+			ColorArea(allColor[i]);
 		}
 
 		drawingCanvasTemp = drawingCanvas + drawingCanvasTemp;
@@ -306,9 +279,7 @@ int main(int argc, char* argv[])
 		auto finish = std::chrono::high_resolution_clock::now();
 		double fps = std::chrono::duration_cast<std::chrono::nanoseconds>(finish - start).count() / 1000000; //fps in millisecond
 		std::cout << ((1 / fps) * 1000) << "fps\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
-
 		//std::cout << wait << "\n";
+		//while (waitKey(30) != 27) {}
 
-	}
-	return 0;
 }
