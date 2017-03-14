@@ -16,6 +16,9 @@
     <Filter Include="Source Files\AirPainting">
       <UniqueIdentifier>{8ec57d8b-4d71-4bdc-bc3e-2b1553318288}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\GameState">
+      <UniqueIdentifier>{de344449-d6ed-477f-9b13-6162ba348932}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AirPainter.cpp">
@@ -24,12 +27,51 @@
     <ClCompile Include="Object.cpp">
       <Filter>Source Files\AirPainting</Filter>
     </ClCompile>
+    <ClCompile Include="Application.cpp">
+      <Filter>Source Files\GameState</Filter>
+    </ClCompile>
+    <ClCompile Include="IntroState.cpp">
+      <Filter>Source Files\GameState</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files\GameState</Filter>
+    </ClCompile>
+    <ClCompile Include="MenuState.cpp">
+      <Filter>Source Files\GameState</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayState.cpp">
+      <Filter>Source Files\GameState</Filter>
+    </ClCompile>
+    <ClCompile Include="State.cpp">
+      <Filter>Source Files\GameState</Filter>
+    </ClCompile>
+    <ClCompile Include="StateMachine.cpp">
+      <Filter>Source Files\GameState</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Object.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="AirPainter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Application.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IntroState.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MenuState.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayState.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="State.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StateMachine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -19,6 +19,11 @@ public:
 
 	void run();
 
+	Mat getCanvas()
+	{
+		return showCanvas;
+	};
+
 private:
 	//640x480,1080x720,1920x1080
 	int FRAME_HEIGHT;
@@ -33,6 +38,7 @@ private:
 	Mat threshold;
 	Mat HSV;
 	Mat drawingCanvas;
+	Mat showCanvas;
 
 	Mat src;
 

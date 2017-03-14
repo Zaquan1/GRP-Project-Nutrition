@@ -210,8 +210,8 @@ void AirPainter::ColorArea(Object &color)
 	Mat tmpThreshold;
 	cvtColor(drawingCanvas, tmpHsv, COLOR_BGR2HSV);
 	inRange(tmpHsv, color.getHSVmin(), color.getHSVmax(), tmpThreshold);
-	imshow("HSVTest", tmpHsv);
-	imshow(color.getType(), tmpThreshold);
+	//imshow("HSVTest", tmpHsv);
+	//imshow(color.getType(), tmpThreshold);
 	Moments moment = moments(tmpThreshold);
 	color.setArea(moment.m00);
 	cout << color.getType() << ": " << color.getArea() << endl;
@@ -235,6 +235,7 @@ void AirPainter::run()
 		src = cameraFeed;
 		if (!src.data)
 		{
+			cout << "error taking video";
 			return;
 		}
 
@@ -271,15 +272,15 @@ void AirPainter::run()
 		}
 
 		drawingCanvasTemp = drawingCanvas + drawingCanvasTemp;
-
+		showCanvas = drawingCanvasTemp;
 		//show frames
-		imshow("Original Image", cameraFeed);
-		imshow("canvas", drawingCanvasTemp);
+		//imshow("Original Image", cameraFeed);
+		//imshow("canvas", drawingCanvasTemp);
 
 		auto finish = std::chrono::high_resolution_clock::now();
 		double fps = std::chrono::duration_cast<std::chrono::nanoseconds>(finish - start).count() / 1000000; //fps in millisecond
 		std::cout << ((1 / fps) * 1000) << "fps\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
 		//std::cout << wait << "\n";
 		//while (waitKey(30) != 27) {}
-
+		
 }

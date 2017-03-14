@@ -119,11 +119,24 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AirPainter.cpp" />
+    <ClCompile Include="Application.cpp" />
+    <ClCompile Include="IntroState.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="MenuState.cpp" />
     <ClCompile Include="Object.cpp" />
+    <ClCompile Include="PlayState.cpp" />
+    <ClCompile Include="State.cpp" />
+    <ClCompile Include="StateMachine.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AirPainter.h" />
+    <ClInclude Include="Application.h" />
+    <ClInclude Include="IntroState.h" />
+    <ClInclude Include="MenuState.h" />
     <ClInclude Include="Object.h" />
+    <ClInclude Include="PlayState.h" />
+    <ClInclude Include="State.h" />
+    <ClInclude Include="StateMachine.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
