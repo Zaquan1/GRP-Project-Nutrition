@@ -83,7 +83,7 @@ void AirPainter::drawObject(vector<Object> theObjects, Mat &frame, vector< vecto
 //temperory, for testting purpose
 void AirPainter::drawLine(int x, int y, Object object, Mat &canvas)
 {
-	line(canvas, Point(x, y), Point(x, y), object.getColor(), 10);
+	line(canvas, Point(x, y), Point(x, y), object.getColor(), 100);
 }
 
 void AirPainter::drawLine(vector<Object> theObjects, Mat &drawingCanvasTemp)
@@ -96,7 +96,7 @@ void AirPainter::drawLine(vector<Object> theObjects, Mat &drawingCanvasTemp)
 				Point(theObjects.at(i).getXPos(), theObjects.at(i).getYPos()),
 				Point(theObjects.at(i).getXPos(), theObjects.at(i).getYPos()),
 				theObjects.at(i).getColor(),
-				10
+				40
 			);
 		}
 		else
@@ -106,7 +106,7 @@ void AirPainter::drawLine(vector<Object> theObjects, Mat &drawingCanvasTemp)
 				Point(theObjects.at(i).getXPos(), theObjects.at(i).getYPos()),
 				Point(theObjects.at(i).getXPos(), theObjects.at(i).getYPos()),
 				theObjects.at(i).getColor(),
-				10
+				40
 			);
 		}
 	}
@@ -207,13 +207,12 @@ void AirPainter::ColorArea(Object &color)
 	Mat tmpHsv;
 	Mat tmpThreshold;
 	cvtColor(drawingCanvas, tmpHsv, COLOR_BGR2HSV);
-	inRange(tmpHsv, color.getHSVmin(), color.getHSVmax(), tmpThreshold);
 	//imshow("HSVTest", tmpHsv);
-	//imshow(color.getType(), tmpThreshold);
+	inRange(tmpHsv, color.getHSVmin(), color.getHSVmax(), tmpThreshold);
+	imshow(color.getType(), tmpThreshold);
 	Moments moment = moments(tmpThreshold);
 	color.setArea(moment.m00);
-	//cout << color.getType() << ": " << color.getArea() << endl;
-
+	cout << color.getType() << ": " << color.getArea() << endl;
 }
 
 void AirPainter::run()
@@ -250,15 +249,15 @@ void AirPainter::run()
 
 		//for low cpu process, hide ColorManager and backgroundFilter and uncomment drawline for area checking
 		/*
-		drawLine(100, 100, blue, drawingCanvas);
-		drawLine(200, 200, red, drawingCanvas);
-		drawLine(300, 300, yellow, drawingCanvas);
-		drawLine(400, 400, green, drawingCanvas);
-		*/
 		ColorManager(drawingCanvasTemp, yellow);
 		ColorManager(drawingCanvasTemp, green);
 		ColorManager(drawingCanvasTemp, blue);
 		ColorManager(drawingCanvasTemp, red);
+		*/
+		drawLine(100, 100, blue, drawingCanvas);
+		drawLine(200, 200, red, drawingCanvas);
+		drawLine(300, 300, yellow, drawingCanvas);
+		drawLine(400, 400, green, drawingCanvas);
 
 
 		for (int i = 0; i < allColor.size(); i++)

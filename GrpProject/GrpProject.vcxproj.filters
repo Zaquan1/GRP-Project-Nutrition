@@ -19,6 +19,9 @@
     <Filter Include="Source Files\GameState">
       <UniqueIdentifier>{de344449-d6ed-477f-9b13-6162ba348932}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\People">
+      <UniqueIdentifier>{30281bf4-8c28-4c61-b227-a31577707fd7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AirPainter.cpp">
@@ -48,6 +51,12 @@
     <ClCompile Include="StateMachine.cpp">
       <Filter>Source Files\GameState</Filter>
     </ClCompile>
+    <ClCompile Include="PeopleManager.cpp">
+      <Filter>Source Files\People</Filter>
+    </ClCompile>
+    <ClCompile Include="People.cpp">
+      <Filter>Source Files\People</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Object.h">
@@ -72,6 +81,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="StateMachine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="People.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PeopleManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
