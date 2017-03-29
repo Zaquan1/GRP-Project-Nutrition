@@ -13,7 +13,7 @@
 
 #include "AirPainter.h"
 
-//names that will appear at the top of each window
+//names that will appear at the top of each windozw
 AirPainter::AirPainter() :AirPainter(640, 480) {}
 
 AirPainter::AirPainter(int frameWidth, int frameHeigth)
@@ -209,6 +209,7 @@ void AirPainter::ColorArea(Object &color)
 	cvtColor(drawingCanvas, tmpHsv, COLOR_BGR2HSV);
 	//imshow("HSVTest", tmpHsv);
 	inRange(tmpHsv, color.getHSVmin(), color.getHSVmax(), tmpThreshold);
+	morphOps(tmpThreshold);
 	imshow(color.getType(), tmpThreshold);
 	Moments moment = moments(tmpThreshold);
 	color.setArea(moment.m00);
@@ -249,28 +250,40 @@ void AirPainter::run()
 
 		//for low cpu process, hide ColorManager and backgroundFilter and uncomment drawline for area checking
 		/*
-		ColorManager(drawingCanvasTemp, yellow);
-		ColorManager(drawingCanvasTemp, green);
-		ColorManager(drawingCanvasTemp, blue);
-		ColorManager(drawingCanvasTemp, red);
-		*/
 		drawLine(100, 100, blue, drawingCanvas);
 		drawLine(200, 200, red, drawingCanvas);
 		drawLine(300, 300, yellow, drawingCanvas);
 		drawLine(400, 400, green, drawingCanvas);
-
+		*/
+		ColorManager(drawingCanvasTemp, yellow);
+		ColorManager(drawingCanvasTemp, green);
+		ColorManager(drawingCanvasTemp, blue);
+		ColorManager(drawingCanvasTemp, red);
 
 		for (int i = 0; i < allColor.size(); i++)
 		{
 			ColorArea(allColor[i]);
+			//imshow("HSVTest", tmpHsv);
 		}
+		////////////////////////test
+		Mat tmpHsv;
+		Mat tmpThreshold;
+		cvtColor(drawingCanvas, tmpHsv, COLOR_BGR2HSV);
+		imshow("HSVTest", tmpHsv);
+		inRange(tmpHsv, Scalar(160, 100, 100), Scalar(179, 255, 255), tmpThreshold);
+		morphOps(tmpThreshold);
+		imshow(allColor[0].getType(), tmpThreshold);
+		Moments moment = moments(tmpThreshold);
+		allColor[0].setArea(moment.m00);
+		cout << allColor[0].getType() << ": " << allColor[0].getArea() << endl;
+		/////////////////////////
 
 		drawingCanvasTemp = drawingCanvas + drawingCanvasTemp;
 		showCanvas = drawingCanvasTemp;
 		//imshow("test", showCanvas);
 		
 		//show frames
-		//imshow("Original Image", cameraFeed);
+		imshow("Original Image", cameraFeed);
 		//imshow("canvas", drawingCanvasTemp);
 		//waitKey(30);
 
