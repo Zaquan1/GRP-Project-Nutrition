@@ -167,7 +167,7 @@ void AirPainter::trackFilteredObject(Object theObject, Mat &drawingCanvasTemp) {
 			//let user know you found an object
 			if (objectFound == true) {
 				//draw object location on screen
-				drawObject(objects, cameraFeed, contours, hierarchy);
+				//drawObject(objects, cameraFeed, contours, hierarchy);
 				drawLine(objects, drawingCanvasTemp);
 			}
 
@@ -199,7 +199,40 @@ void AirPainter::ColorManager(Mat &drawingCanvasTemp, Object colorObject)
 	cvtColor(cameraFeed, HSV, COLOR_BGR2HSV);
 	inRange(HSV, colorObject.getHSVmin(), colorObject.getHSVmax(), threshold);
 	morphOps(threshold);
-	trackFilteredObject(colorObject, drawingCanvasTemp);
+	TrackCircle(colorObject, drawingCanvasTemp);
+	//trackFilteredObject(colorObject, drawingCanvasTemp);
+}
+
+void AirPainter::TrackCircle(Object color, Mat &drawingCanvasTemp)
+{
+	vector <Object> objects;
+	bool objectFound = false;
+	GaussianBlur(threshold, threshold, Size(9, 9), 2, 2);
+	imshow(color.getType(), threshold);
+	vector<Vec3f> circles;
+	/// Apply the Hough Transform to find the circles
+	HoughCircles(threshold, circles, CV_HOUGH_GRADIENT, 1, threshold.rows / 8, 100, 20, 30, 0);
+	for (size_t i = 0; i < circles.size(); i++)
+	{
+		Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));
+		int radius = cvRound(circles[i][2]);
+		Object object;
+		object.setXPos(cvRound(circles[i][0]));
+		object.setYPos(cvRound(circles[i][1]));
+		object.setType(color.getType());
+		object.setColor(color.getColor());
+		objects.push_back(object);
+		objectFound = true;
+		// circle center
+		circle(cameraFeed, center, 3, Scalar(0, 255, 0), -10, 8, 0);
+		// circle outline
+		circle(cameraFeed, center, radius, Scalar(0, 0, 255), 3, 8, 0);
+		cout << "circle get: " << i << endl;
+	}
+	if (objectFound)
+	{
+		drawLine(objects, drawingCanvasTemp);
+	}
 }
 
 void AirPainter::ColorArea(Object &color)
@@ -210,10 +243,10 @@ void AirPainter::ColorArea(Object &color)
 	//imshow("HSVTest", tmpHsv);
 	inRange(tmpHsv, color.getHSVmin(), color.getHSVmax(), tmpThreshold);
 	morphOps(tmpThreshold);
-	imshow(color.getType(), tmpThreshold);
+	//imshow(color.getType(), tmpThreshold);
 	Moments moment = moments(tmpThreshold);
 	color.setArea(moment.m00);
-	cout << color.getType() << ": " << color.getArea() << endl;
+	//cout << color.getType() << ": " << color.getArea() << endl;
 }
 
 void AirPainter::run()
@@ -242,6 +275,7 @@ void AirPainter::run()
 
 
 		//convert frame from BGR to HSV colorspace
+		medianBlur(cameraFeed, cameraFeed, 3);
 		cvtColor(cameraFeed, HSV, COLOR_BGR2HSV);
 		//create some temp fruit objects so that
 		//we can use their member functions/information
@@ -265,18 +299,9 @@ void AirPainter::run()
 			ColorArea(allColor[i]);
 			//imshow("HSVTest", tmpHsv);
 		}
-		////////////////////////test
-		Mat tmpHsv;
-		Mat tmpThreshold;
-		cvtColor(drawingCanvas, tmpHsv, COLOR_BGR2HSV);
-		imshow("HSVTest", tmpHsv);
-		inRange(tmpHsv, Scalar(160, 100, 100), Scalar(179, 255, 255), tmpThreshold);
-		morphOps(tmpThreshold);
-		imshow(allColor[0].getType(), tmpThreshold);
-		Moments moment = moments(tmpThreshold);
-		allColor[0].setArea(moment.m00);
-		cout << allColor[0].getType() << ": " << allColor[0].getArea() << endl;
-		/////////////////////////
+		/////
+		
+		/////
 
 		drawingCanvasTemp = drawingCanvas + drawingCanvasTemp;
 		showCanvas = drawingCanvasTemp;

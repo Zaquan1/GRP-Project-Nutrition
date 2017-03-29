@@ -59,5 +59,6 @@ private:
 	void trackFilteredObject(Object theObject, Mat &drawingCanvasTemp);
 	void backgroundFilter();
 	void ColorManager(Mat &drawingCanvasTemp, Object colorObject);
+	void TrackCircle(Object color, Mat &drawingCanvasTemp);
 	void ColorArea(Object &color);
 };
