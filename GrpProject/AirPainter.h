@@ -16,6 +16,10 @@ public:
 	AirPainter();
 
 	void run();
+	void ChangeDetect()
+	{
+		change = !change;
+	};
 
 	Mat getCanvas()
 	{
@@ -31,6 +35,8 @@ private:
 	Mat showCanvas;
 
 	Mat src;
+
+	bool change;
 
 	VideoCapture capture;
 

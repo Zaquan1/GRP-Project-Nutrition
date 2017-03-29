@@ -53,6 +53,8 @@ void PlayState::update()
 			case sf::Keyboard::M:
 				m_next = StateMachine::build<MenuState>(m_machine, m_window, false);
 				break;
+			case sf::Keyboard::C:
+				airPainter.ChangeDetect();
 
 			default:
 				break;

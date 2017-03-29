@@ -21,6 +21,9 @@ AirPainter::AirPainter(int frameWidth, int frameHeigth)
 	FRAME_WIDTH = frameWidth;
 	FRAME_HEIGHT = frameHeigth;
 	MAX_OBJECT_AREA = FRAME_HEIGHT*FRAME_WIDTH / 3;
+	//switch between track all or track circle only
+	change = true;
+
 	capture.open(0);
 	if (!capture.isOpened())
 	{
@@ -167,7 +170,7 @@ void AirPainter::trackFilteredObject(Object theObject, Mat &drawingCanvasTemp) {
 			//let user know you found an object
 			if (objectFound == true) {
 				//draw object location on screen
-				//drawObject(objects, cameraFeed, contours, hierarchy);
+				drawObject(objects, cameraFeed, contours, hierarchy);
 				drawLine(objects, drawingCanvasTemp);
 			}
 
@@ -199,16 +202,22 @@ void AirPainter::ColorManager(Mat &drawingCanvasTemp, Object colorObject)
 	cvtColor(cameraFeed, HSV, COLOR_BGR2HSV);
 	inRange(HSV, colorObject.getHSVmin(), colorObject.getHSVmax(), threshold);
 	morphOps(threshold);
-	TrackCircle(colorObject, drawingCanvasTemp);
-	//trackFilteredObject(colorObject, drawingCanvasTemp);
+	GaussianBlur(threshold, threshold, Size(9, 9), 2, 2);
+	imshow(colorObject.getType(), threshold);
+	if (change)
+	{
+		TrackCircle(colorObject, drawingCanvasTemp);
+	}
+	else
+	{
+		trackFilteredObject(colorObject, drawingCanvasTemp);
+	}
 }
 
 void AirPainter::TrackCircle(Object color, Mat &drawingCanvasTemp)
 {
 	vector <Object> objects;
 	bool objectFound = false;
-	GaussianBlur(threshold, threshold, Size(9, 9), 2, 2);
-	imshow(color.getType(), threshold);
 	vector<Vec3f> circles;
 	/// Apply the Hough Transform to find the circles
 	HoughCircles(threshold, circles, CV_HOUGH_GRADIENT, 1, threshold.rows / 8, 100, 20, 30, 0);
