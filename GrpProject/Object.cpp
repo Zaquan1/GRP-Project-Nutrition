@@ -20,8 +20,8 @@ Object::Object(string name) {
 		setHSVmin(Scalar(93, 38, 134));
 		setHSVmax(Scalar(119, 225, 206));
 
-		//BGR value for Green:
-		setColor(Scalar(255, 0, 0));
+		//BGR value for Blue:
+		setColor(Scalar(250, 0, 0));
 
 	}
 	if (name == "green") {
@@ -32,8 +32,8 @@ Object::Object(string name) {
 		setHSVmin(Scalar(34, 50, 50));
 		setHSVmax(Scalar(80, 220, 200));
 
-		//BGR value for Yellow:
-		setColor(Scalar(0, 255, 0));
+		//BGR value for Green:
+		setColor(Scalar(0, 250, 0));
 
 	}
 	if (name == "yellow") {
@@ -44,7 +44,7 @@ Object::Object(string name) {
 		setHSVmin(Scalar(20, 124, 123));
 		setHSVmax(Scalar(30, 255, 255));
 
-		//BGR value for Red:
+		//BGR value for yellow:
 		setColor(Scalar(0, 255, 255));
 
 	}
@@ -57,7 +57,7 @@ Object::Object(string name) {
 		setHSVmax(Scalar(179, 255, 255));
 
 		//BGR value for Red:
-		setColor(Scalar(0, 0, 255));
+		setColor(Scalar(0, 0, 250));
 
 	}
 }
