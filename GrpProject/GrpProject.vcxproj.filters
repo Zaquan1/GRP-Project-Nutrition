@@ -57,6 +57,9 @@
     <ClCompile Include="People.cpp">
       <Filter>Source Files\People</Filter>
     </ClCompile>
+    <ClCompile Include="Status.cpp">
+      <Filter>Source Files\People</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Object.h">
@@ -89,5 +92,13 @@
     <ClInclude Include="PeopleManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Status.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="record.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
   </ItemGroup>
 </Project>

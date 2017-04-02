@@ -1,11 +1,32 @@
 #pragma once
-#include <string>
+#include "Status.h"
 
-using namespace std;
 class People
 {
 public:
-	People();
-	People(string name);
+	People(Status a, Status i, Status j);
+
+	int getProtein();
+	int getCarbs();
+	int getFats();
+	int getVitamins();
+	int getVeggies();
+
+	string getAge();
+	string getIllness();
+	string getJob();
+
+private:
+	Status age;
+	Status illness;
+	Status job;
+
+	int protein;
+	int carbs;
+	int fats;
+	int vitamins;
+	int veggies;
+
+	void CalculateStatus();
 
 };

@@ -129,6 +129,7 @@
     <ClCompile Include="PlayState.cpp" />
     <ClCompile Include="State.cpp" />
     <ClCompile Include="StateMachine.cpp" />
+    <ClCompile Include="Status.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AirPainter.h" />
@@ -141,6 +142,10 @@
     <ClInclude Include="PlayState.h" />
     <ClInclude Include="State.h" />
     <ClInclude Include="StateMachine.h" />
+    <ClInclude Include="Status.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="record.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
