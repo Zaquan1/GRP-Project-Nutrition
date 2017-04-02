@@ -1,6 +1,6 @@
 #include "Status.h"
 
-Status::Status(): protein(0), carbs(0), fats(0), vitamins(0), veggies(0), statusName("none") {}
+Status::Status(): protein(0), carbs(0), fats(0), vitamins(0), veggies(0), statusName("none\n") {}
 
 Status::Status(string name)
 {

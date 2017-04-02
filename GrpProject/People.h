@@ -11,6 +11,7 @@ public:
 	int getFats();
 	int getVitamins();
 	int getVeggies();
+	void status();
 
 	string getAge();
 	string getIllness();
