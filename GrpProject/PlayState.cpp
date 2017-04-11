@@ -15,8 +15,8 @@ PlayState::PlayState(StateMachine& machine, sf::RenderWindow& window, bool repla
 	//m_bgTex.loadFromFile("img/play.png");
 
 	//m_bg.setTexture(m_bgTex, true);
-	PeopleManager manager;
-	manager.testPurpose();
+	PeopleManager peopleManager;
+	peopleManager.testPurpose();
 
 	std::cout << "PlayState Init" << std::endl;
 }

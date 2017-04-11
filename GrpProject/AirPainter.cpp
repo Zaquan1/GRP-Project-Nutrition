@@ -236,7 +236,6 @@ void AirPainter::TrackCircle(Object color, Mat &drawingCanvasTemp)
 		circle(cameraFeed, center, 3, Scalar(0, 255, 0), -10, 8, 0);
 		// circle outline
 		circle(cameraFeed, center, radius, Scalar(0, 0, 255), 3, 8, 0);
-		cout << "circle get: " << i << endl;
 	}
 	if (objectFound)
 	{
@@ -254,7 +253,7 @@ void AirPainter::ColorArea(Object &color)
 	morphOps(tmpThreshold);
 	//imshow(color.getType(), tmpThreshold);
 	Moments moment = moments(tmpThreshold);
-	color.setArea(moment.m00);
+	color.setArea(moment.m00/100);
 	//cout << color.getType() << ": " << color.getArea() << endl;
 }
 
