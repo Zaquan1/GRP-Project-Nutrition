@@ -3,10 +3,13 @@
 
 #include "State.h"
 
+#include <SFML\Graphics.hpp>
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Texture.hpp>
+
+#define MAX_NUMBER_OF_ITEMS 4
 
 class StateMachine;
 
@@ -26,11 +29,22 @@ public:
 	void update();
 	void draw();
 
+	void MoveUp();
+	void MoveDown();
+
+	int GetPressedItem() { return selectedItemIndex; }
+
 private:
 	sf::Texture m_bgTex;
 	sf::Sprite m_bg;
+
 	sf::RectangleShape m_fader;
 	sf::Color m_alpha;
+
+	int selectedItemIndex;
+	sf::Font font;
+	sf::Text title;
+	sf::Text menu[MAX_NUMBER_OF_ITEMS];
 };
 
 #endif // INTROSTATE_HPP

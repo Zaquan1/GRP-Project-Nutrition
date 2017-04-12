@@ -3,7 +3,9 @@
 
 #include "State.h"
 #include "AirPainter.h"
-
+#include "PeopleManager.h"
+#include <ctime>
+#include <SFML\Graphics.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Texture.hpp>
 
@@ -24,14 +26,17 @@ public:
 
 	void update();
 	void draw();
+	void MattoSprite();
 
 private:
 	sf::Texture m_bgTex;
 	sf::Sprite m_bg;
 
-	AirPainter airPainter;
+	time_t beginT = NULL;
+	time_t endT = NULL;
 
-	void MattoSprite();
+	AirPainter airPainter;
+	PeopleManager pManager;
 };
 
 #endif // PLAYSTATE_HPP

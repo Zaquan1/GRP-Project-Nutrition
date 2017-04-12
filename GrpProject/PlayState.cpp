@@ -4,21 +4,18 @@
 #include "StateMachine.h"
 #include "PlayState.h"
 #include "MenuState.h"
-#include "PeopleManager.h"
 
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Window/Event.hpp>
 
 PlayState::PlayState(StateMachine& machine, sf::RenderWindow& window, bool replace)
-	: State{ machine, window, replace }, airPainter()
+	: State{ machine, window, replace }, airPainter(m_window.getSize().x, m_window.getSize().y), pManager()
 {
-	//m_bgTex.loadFromFile("img/play.png");
 
 	//m_bg.setTexture(m_bgTex, true);
-	PeopleManager peopleManager;
-	peopleManager.testPurpose();
 
 	std::cout << "PlayState Init" << std::endl;
+	pManager.testPurpose();
 }
 
 void PlayState::pause()
@@ -33,13 +30,24 @@ void PlayState::resume()
 
 void PlayState::update()
 {
-	sf::Event event;
-
 	airPainter.run();
 	MattoSprite();
-	
+	sf::Event event;
+	if (difftime(endT, beginT) < 2.0f)
+	{
+		endT = time(NULL);
+	}
+	else
+	{
+		beginT = time(NULL);
+		endT = time(NULL);
+
+		std::cout << "Time" << std::endl;
+	}
+
 	while (m_window.pollEvent(event))
 	{
+		
 		switch (event.type)
 		{
 		case sf::Event::Closed:
@@ -56,8 +64,6 @@ void PlayState::update()
 			case sf::Keyboard::M:
 				m_next = StateMachine::build<MenuState>(m_machine, m_window, false);
 				break;
-			case sf::Keyboard::C:
-				airPainter.ChangeDetect();
 
 			default:
 				break;
@@ -89,18 +95,7 @@ void PlayState::MattoSprite()
 void PlayState::draw()
 {
 	// Clear the previous drawing
-	sf::Image test;
-	sf::Texture tex;
-	sf::Sprite temp;
-	cv::Mat tempMat;
-	tempMat = airPainter.getCanvas();
-	test.create(tempMat.cols/2, tempMat.rows/2, sf::Color(0, 200, 0, 255));
-	tex.loadFromImage(test);
-	
-	temp.setTexture(tex, true);
-
 	m_window.clear();
-	m_window.draw(temp);
 	m_window.draw(m_bg);
 	m_window.display();
 }
