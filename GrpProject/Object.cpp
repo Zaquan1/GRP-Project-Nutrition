@@ -17,8 +17,10 @@ Object::Object(string name) {
 		//TODO: use "calibration mode" to find HSV min
 		//and HSV max values
 
-		setHSVmin(Scalar(70, 128, 3));
-		setHSVmax(Scalar(164, 225, 255));
+		setHSVminArea(Scalar(70, 128, 3));
+		setHSVmaxArea(Scalar(164, 225, 255));
+		setHSVmin(Scalar(93, 38, 134));
+		setHSVmax(Scalar(119, 225, 206));
 
 		//BGR value for Blue:
 		setColor(Scalar(250, 0, 0));
@@ -29,8 +31,10 @@ Object::Object(string name) {
 		//TODO: use "calibration mode" to find HSV min
 		//and HSV max values
 
-		setHSVmin(Scalar(47, 24, 162));
-		setHSVmax(Scalar(100, 255, 255));
+		setHSVminArea(Scalar(47, 24, 162));
+		setHSVmaxArea(Scalar(100, 255, 255));
+		setHSVmin(Scalar(34, 50, 50));
+		setHSVmax(Scalar(80, 220, 200));
 
 		//BGR value for Green:
 		setColor(Scalar(0, 250, 0));
@@ -53,7 +57,9 @@ Object::Object(string name) {
 		//TODO: use "calibration mode" to find HSV min
 		//and HSV max values
 
-		setHSVmin(Scalar(160, 100, 100));
+		setHSVminArea(Scalar(160, 100, 100));
+		setHSVmaxArea(Scalar(179, 255, 255));
+		setHSVmin(Scalar(161, 0, 53));
 		setHSVmax(Scalar(179, 255, 255));
 
 		//BGR value for Red:
@@ -105,6 +111,16 @@ Scalar Object::getHSVmax() {
 	return Object::HSVmax;
 }
 
+Scalar Object::getHSVminArea() {
+
+	return Object::HSVminArea;
+
+}
+Scalar Object::getHSVmaxArea() {
+
+	return Object::HSVmaxArea;
+}
+
 void Object::setHSVmin(Scalar min) {
 
 	Object::HSVmin = min;
@@ -114,6 +130,17 @@ void Object::setHSVmin(Scalar min) {
 void Object::setHSVmax(Scalar max) {
 
 	Object::HSVmax = max;
+}
+
+void Object::setHSVminArea(Scalar min) {
+
+	Object::HSVminArea = min;
+}
+
+
+void Object::setHSVmaxArea(Scalar max) {
+
+	Object::HSVmaxArea = max;
 }
 
 void Object::setArea(double Area)

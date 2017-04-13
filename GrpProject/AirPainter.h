@@ -21,10 +21,10 @@ public:
 		change = !change;
 	};
 
-	Mat getCanvas()
-	{
-		return showCanvas;
-	};
+	Mat getCanvas(){ return showCanvas; };
+
+	int getColorArea(string color);
+	void resetArea_Canvas();
 
 private:
 	

@@ -224,10 +224,33 @@ void AirPainter::ColorArea(Object &color)
 	Mat tmpHsv;
 	Mat tmpThreshold;
 	cvtColor(drawingCanvas, tmpHsv, COLOR_BGR2HSV);
-	inRange(tmpHsv, color.getHSVmin(), color.getHSVmax(), tmpThreshold);
+	inRange(tmpHsv, color.getHSVminArea(), color.getHSVmaxArea(), tmpThreshold);
 	morphOps(tmpThreshold);
 	Moments moment = moments(tmpThreshold);
 	color.setArea(moment.m00/100);
+}
+
+//get the area that the user had drawn
+int AirPainter::getColorArea(string name)
+{
+	int area = 0;
+	for (int i = 0; i < allColor.size(); i++)
+	{
+		if (allColor.at(i).getType() == name)
+		{
+			area = allColor.at(i).getArea();
+		}
+	}
+	return area;
+}
+
+void AirPainter::resetArea_Canvas()
+{
+	for (int i = 0; i < allColor.size(); i++)
+	{
+		allColor.at(i).setArea(0);
+	}
+	drawingCanvas = Mat::zeros(cameraFeed.size(), CV_8UC3);
 }
 
 

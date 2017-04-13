@@ -26,9 +26,13 @@ public:
 
 	Scalar getHSVmin();
 	Scalar getHSVmax();
+	Scalar getHSVminArea();
+	Scalar getHSVmaxArea();
 
 	void setHSVmin(Scalar min);
 	void setHSVmax(Scalar max);
+	void setHSVminArea(Scalar min);
+	void setHSVmaxArea(Scalar max);
 
 	string getType() { return type; }
 	void setType(string t) { type = t; }
@@ -48,7 +52,7 @@ private:
 
 	int xPos, yPos;
 	string type;
-	Scalar HSVmin, HSVmax;
+	Scalar HSVmin, HSVmax, HSVminArea, HSVmaxArea;
 	Scalar Color;
 	double area;
 };
