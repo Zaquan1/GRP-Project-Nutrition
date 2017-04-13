@@ -13,7 +13,7 @@
 
 #include "AirPainter.h"
 
-//names that will appear at the top of each windozw
+//default constructor
 AirPainter::AirPainter() :AirPainter(640, 480) {}
 
 AirPainter::AirPainter(int frameWidth, int frameHeigth)
@@ -21,7 +21,8 @@ AirPainter::AirPainter(int frameWidth, int frameHeigth)
 	FRAME_WIDTH = frameWidth;
 	FRAME_HEIGHT = frameHeigth;
 	MAX_OBJECT_AREA = FRAME_HEIGHT*FRAME_WIDTH / 3;
-	//switch between track all or track circle only
+
+	//change detection mode to circle detect
 	change = true;
 
 	capture.open(0);
@@ -29,20 +30,19 @@ AirPainter::AirPainter(int frameWidth, int frameHeigth)
 	{
 		cout << "capture is not openned";
 	}
+
 	//set height and width of capture frame
 	capture.set(CV_CAP_PROP_FRAME_WIDTH, FRAME_WIDTH);
 	capture.set(CV_CAP_PROP_FRAME_HEIGHT, FRAME_HEIGHT);
-
 	capture.read(cameraFeed);
-	//imshow("test3", cameraFeed);
-	drawingCanvas = Mat::zeros(cameraFeed.size(), CV_8UC3);
 
-	//start an infinite loop where webcam feed is copied to cameraFeed matrix
-	//all of our operations will be performed within this loop
+	//create empty mat with black background
+	drawingCanvas = Mat::zeros(cameraFeed.size(), CV_8UC3);
 
 	//create background filtering object
 	bg_model = createBackgroundSubtractorMOG2().dynamicCast<BackgroundSubtractor>();
 
+	//create object to store area drawn by the user
 	Object oriRed("red"), oriBlue("blue"), oriGreen("green"), oriYellow("yellow");
 	
 	allColor.push_back(oriRed);
@@ -51,6 +51,7 @@ AirPainter::AirPainter(int frameWidth, int frameHeigth)
 	allColor.push_back(oriYellow);
 }
 
+//convert int to string
 string intToString(int number) {
 
 	std::stringstream ss;
@@ -58,37 +59,7 @@ string intToString(int number) {
 	return ss.str();
 }
 
-//temperory, for testting purpose
-void AirPainter::drawObject(vector<Object> theObjects, Mat &frame, vector< vector<Point> > contours, vector<Vec4i> hierarchy) {
-
-	for (int i = 0; i<theObjects.size(); i++) {
-		cv::drawContours(frame, contours, i, theObjects.at(i).getColor(), 3, 8, hierarchy);
-		cv::circle(frame, cv::Point(theObjects.at(i).getXPos(), theObjects.at(i).getYPos()), 5, theObjects.at(i).getColor());
-		cv::putText(
-			frame,
-			intToString(theObjects.at(i).getXPos()) + " , " + intToString(theObjects.at(i).getYPos()) + " , " + intToString(theObjects.at(i).getArea()),
-			cv::Point(theObjects.at(i).getXPos(), theObjects.at(i).getYPos() + 20),
-			1,
-			1,
-			theObjects.at(i).getColor()
-		);
-		cv::putText(
-			frame,
-			theObjects.at(i).getType(),
-			cv::Point(theObjects.at(i).getXPos(), theObjects.at(i).getYPos() - 20),
-			1,
-			2,
-			theObjects.at(i).getColor()
-		);
-	}
-}
-
-//temperory, for testting purpose
-void AirPainter::drawLine(int x, int y, Object object, Mat &canvas)
-{
-	line(canvas, Point(x, y), Point(x, y), object.getColor(), 100);
-}
-
+//draw the line on the canvas
 void AirPainter::drawLine(vector<Object> theObjects, Mat &drawingCanvasTemp)
 {
 	for (int i = 0; i < theObjects.size(); i++) {
@@ -115,6 +86,7 @@ void AirPainter::drawLine(vector<Object> theObjects, Mat &drawingCanvasTemp)
 	}
 }
 
+//filter noise
 void AirPainter::morphOps(Mat &thresh) {
 
 	//create structuring element that will be used to "dilate" and "erode" image.
@@ -130,14 +102,12 @@ void AirPainter::morphOps(Mat &thresh) {
 	dilate(thresh, thresh, dilateElement);
 }
 
+//track all object with color
 void AirPainter::trackFilteredObject(Object theObject, Mat &drawingCanvasTemp) {
 	vector <Object> objects;
-	//these two vectors needed for output of findContours
 	GaussianBlur(threshold, threshold, cv::Size(9, 9), 2, 2);
 
-	//imshow(theObject.getType (), threshold);
 	//find contours of filtered image using openCV findContours function
-	
 	findContours(threshold, contours, hierarchy, CV_RETR_CCOMP, CV_CHAIN_APPROX_SIMPLE);
 	
 	//use moments method to find our filtered object
@@ -150,10 +120,8 @@ void AirPainter::trackFilteredObject(Object theObject, Mat &drawingCanvasTemp) {
 			{
 				Moments moment = moments((cv::Mat)contours[index]);
 				double area = moment.m00;
-				//if the area is less than 20 px by 20px then it is probably just noise
-				//if the area is the same as the 3/2 of the image size, probably just a bad filter
-				//we only want the object with the largest area so we safe a reference area each
-				//iteration and compare it to the area in the next iteration.
+
+				//filtering object that is too small or too big
 				if (area>MIN_OBJECT_AREA && area < MAX_OBJECT_AREA)
 				{
 					Object object;
@@ -167,10 +135,11 @@ void AirPainter::trackFilteredObject(Object theObject, Mat &drawingCanvasTemp) {
 				}
 				else objectFound = false;
 			}
+
 			//let user know you found an object
 			if (objectFound == true) {
+
 				//draw object location on screen
-				drawObject(objects, cameraFeed, contours, hierarchy);
 				drawLine(objects, drawingCanvasTemp);
 			}
 
@@ -181,45 +150,13 @@ void AirPainter::trackFilteredObject(Object theObject, Mat &drawingCanvasTemp) {
 	}
 }
 
-void AirPainter::backgroundFilter()
-{
-	Mat foregroundImg;
-	bg_model->apply(cameraFeed, foregroundMask, true ? -1 : 0);
-
-	// smooth the mask to reduce noise in image
-	GaussianBlur(foregroundMask, foregroundMask, Size(11, 11), 3.5, 3.5);
-
-	// threshold mask to saturate at black and white values
-	cv::threshold(foregroundMask, foregroundMask, 10, 255, THRESH_BINARY);
-	foregroundImg = Scalar::all(0);
-	// Copy source image to foreground image only in area with white mask
-	cameraFeed.copyTo(foregroundImg, foregroundMask);
-	foregroundImg.copyTo(cameraFeed);
-}
-
-void AirPainter::ColorManager(Mat &drawingCanvasTemp, Object colorObject)
-{
-	cvtColor(cameraFeed, HSV, COLOR_BGR2HSV);
-	inRange(HSV, colorObject.getHSVmin(), colorObject.getHSVmax(), threshold);
-	morphOps(threshold);
-	GaussianBlur(threshold, threshold, Size(9, 9), 2, 2);
-	imshow(colorObject.getType(), threshold);
-	if (change)
-	{
-		TrackCircle(colorObject, drawingCanvasTemp);
-	}
-	else
-	{
-		trackFilteredObject(colorObject, drawingCanvasTemp);
-	}
-}
-
+//only track circle object
 void AirPainter::TrackCircle(Object color, Mat &drawingCanvasTemp)
 {
 	vector <Object> objects;
 	bool objectFound = false;
 	vector<Vec3f> circles;
-	/// Apply the Hough Transform to find the circles
+	// Apply the Hough Transform to find the circles
 	HoughCircles(threshold, circles, CV_HOUGH_GRADIENT, 1, threshold.rows / 8, 100, 20, 30, 0);
 	for (size_t i = 0; i < circles.size(); i++)
 	{
@@ -232,6 +169,7 @@ void AirPainter::TrackCircle(Object color, Mat &drawingCanvasTemp)
 		object.setColor(color.getColor());
 		objects.push_back(object);
 		objectFound = true;
+
 		// circle center
 		circle(cameraFeed, center, 3, Scalar(0, 255, 0), -10, 8, 0);
 		// circle outline
@@ -243,25 +181,58 @@ void AirPainter::TrackCircle(Object color, Mat &drawingCanvasTemp)
 	}
 }
 
+//filter all static background
+void AirPainter::backgroundFilter()
+{
+	Mat foregroundImg;
+	bg_model->apply(cameraFeed, foregroundMask, true ? -1 : 0);
+
+	// smooth the mask to reduce noise in image
+	GaussianBlur(foregroundMask, foregroundMask, Size(11, 11), 3.5, 3.5);
+
+	// threshold mask to saturate at black and white values
+	cv::threshold(foregroundMask, foregroundMask, 10, 255, THRESH_BINARY);
+	foregroundImg = Scalar::all(0);
+
+	// Copy source image to foreground image only in area with white mask
+	cameraFeed.copyTo(foregroundImg, foregroundMask);
+	foregroundImg.copyTo(cameraFeed);
+}
+
+//managing specific color to be filter and drawn
+void AirPainter::ColorManager(Mat &drawingCanvasTemp, Object colorObject)
+{
+	cvtColor(cameraFeed, HSV, COLOR_BGR2HSV);
+	inRange(HSV, colorObject.getHSVmin(), colorObject.getHSVmax(), threshold);
+	morphOps(threshold);
+	GaussianBlur(threshold, threshold, Size(9, 9), 2, 2);
+	imshow(colorObject.getType(), threshold);
+	//convert between 2 different types of tracking
+	if (change)
+	{
+		TrackCircle(colorObject, drawingCanvasTemp);
+	}
+	else
+	{
+		trackFilteredObject(colorObject, drawingCanvasTemp);
+	}
+}
+
+//get the area where the user had drawn
 void AirPainter::ColorArea(Object &color)
 {
 	Mat tmpHsv;
 	Mat tmpThreshold;
 	cvtColor(drawingCanvas, tmpHsv, COLOR_BGR2HSV);
-	//imshow("HSVTest", tmpHsv);
 	inRange(tmpHsv, color.getHSVmin(), color.getHSVmax(), tmpThreshold);
 	morphOps(tmpThreshold);
-	//imshow(color.getType(), tmpThreshold);
 	Moments moment = moments(tmpThreshold);
 	color.setArea(moment.m00/100);
-	//cout << color.getType() << ": " << color.getArea() << endl;
 }
+
 
 void AirPainter::run()
 {
-		//auto start = std::chrono::high_resolution_clock::now();
-		//store image to matrix
-		//capture.read(cameraFeed);
 		capture >> cameraFeed;
 
 		if (!cameraFeed.data)
@@ -285,44 +256,24 @@ void AirPainter::run()
 		//convert frame from BGR to HSV colorspace
 		medianBlur(cameraFeed, cameraFeed, 3);
 		cvtColor(cameraFeed, HSV, COLOR_BGR2HSV);
-		//create some temp fruit objects so that
-		//we can use their member functions/information
+
 		Object blue("blue"), yellow("yellow"), red("red"), green("green");
 
-
-		//for low cpu process, hide ColorManager and backgroundFilter and uncomment drawline for area checking
-		/*
-		drawLine(100, 100, blue, drawingCanvas);
-		drawLine(200, 200, red, drawingCanvas);
-		drawLine(300, 300, yellow, drawingCanvas);
-		drawLine(400, 400, green, drawingCanvas);
-		*/
 		ColorManager(drawingCanvasTemp, yellow);
 		ColorManager(drawingCanvasTemp, green);
 		ColorManager(drawingCanvasTemp, blue);
 		ColorManager(drawingCanvasTemp, red);
 
+		//search for area drawn by the user
 		for (int i = 0; i < allColor.size(); i++)
 		{
 			ColorArea(allColor[i]);
-			//imshow("HSVTest", tmpHsv);
 		}
-		/////
-		
-		/////
 
 		drawingCanvasTemp = drawingCanvas + drawingCanvasTemp;
 		showCanvas = drawingCanvasTemp;
 		//imshow("test", showCanvas);
 		
-		//show frames
 		imshow("Original Image", cameraFeed);
-		//imshow("canvas", drawingCanvasTemp);
-		//waitKey(30);
-
-		//auto finish = std::chrono::high_resolution_clock::now();
-		//double fps = std::chrono::duration_cast<std::chrono::nanoseconds>(finish - start).count() / 1000000; //fps in millisecond
-		//std::cout << ((1 / fps) * 1000) << "fps\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
-		//std::cout << wait << "\n";
 		
 }
