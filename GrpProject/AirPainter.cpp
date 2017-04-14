@@ -12,6 +12,7 @@
 //IN THE SOFTWARE.
 
 #include "AirPainter.h"
+#define POSITIVE(n) ((n) < 0 ? 0 - (n) : (n))
 
 //default constructor
 AirPainter::AirPainter() :AirPainter(640, 480) {}
@@ -59,10 +60,16 @@ string intToString(int number) {
 	return ss.str();
 }
 
+bool AirPainter::drawable(int x, int y)
+{
+
+}
+
 //draw the line on the canvas
 void AirPainter::drawLine(vector<Object> theObjects, Mat &drawingCanvasTemp)
 {
 	for (int i = 0; i < theObjects.size(); i++) {
+		//if (drawable(theObjects.at(i).getXPos(), theObjects.at(i).getYPos()))
 		if (!(theObjects.at(i).getXPos() > FRAME_WIDTH / 2) && !(theObjects.at(i).getYPos() > FRAME_HEIGHT / 2))
 		{
 			line(
@@ -228,10 +235,11 @@ void AirPainter::ColorArea(Object &color)
 	morphOps(tmpThreshold);
 	Moments moment = moments(tmpThreshold);
 	color.setArea(moment.m00/100);
+	cout << color.getType() << color.getArea() << endl;
 }
 
 //get the area that the user had drawn
-int AirPainter::getColorArea(string name)
+string AirPainter::getColorArea(string name)
 {
 	int area = 0;
 	for (int i = 0; i < allColor.size(); i++)
@@ -241,7 +249,7 @@ int AirPainter::getColorArea(string name)
 			area = allColor.at(i).getArea();
 		}
 	}
-	return area;
+	return intToString(area);
 }
 
 void AirPainter::resetArea_Canvas()

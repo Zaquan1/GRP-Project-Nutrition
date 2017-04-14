@@ -26,14 +26,23 @@ public:
 
 	void update();
 	void draw();
-	void MattoSprite();
 
 private:
+
+	void MattoSprite();
+	void drawInfo();
 	sf::Texture m_bgTex;
+	sf::Texture aP_Tex;
 	sf::Sprite m_bg;
+	sf::Sprite aP;
+	sf::Font font;
+	sf::Text time_text;
+	sf::FloatRect textRect;
 
 	time_t beginT = NULL;
 	time_t endT = NULL;
+	int time_f = 0;
+	std::string timer;
 
 	AirPainter airPainter;
 	PeopleManager pManager;

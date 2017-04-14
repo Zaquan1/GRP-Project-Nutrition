@@ -3,8 +3,6 @@
 #include <string>
 #include <iostream>
 #include <vector>
-#include <windows.h>
-#include <thread>
 #include "Object.h"
 #include <chrono>
 
@@ -23,7 +21,7 @@ public:
 
 	Mat getCanvas(){ return showCanvas; };
 
-	int getColorArea(string color);
+	string getColorArea(string color);
 	void resetArea_Canvas();
 
 private:
@@ -56,9 +54,7 @@ private:
 	const int MIN_OBJECT_AREA = 1000;
 	int MAX_OBJECT_AREA;
 
-	//temp for testing
-	void drawLine(int x, int y, Object object, Mat &canvas);
-	void drawObject(vector<Object> theObjects, Mat &frame, vector< vector<Point> > contours, vector<Vec4i> hierarchy);
+	bool drawable(int x, int y);
 
 	void drawLine(vector<Object> theObjects, Mat &drawingCanvasTemp);
 	void morphOps(Mat &thresh);
