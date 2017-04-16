@@ -106,6 +106,12 @@
     <Image Include="img\Intro_Background.png">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="img\Add.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="img\play.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Text Include="people.txt">

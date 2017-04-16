@@ -14,6 +14,14 @@
 #include "AirPainter.h"
 #define POSITIVE(n) ((n) < 0 ? 0 - (n) : (n))
 
+/*
+int lh = 179;
+int hh = 225;
+int ls = 225;
+int hs = 91;
+int lv = 213;
+int hv = 143;
+*/
 //default constructor
 AirPainter::AirPainter() :AirPainter(640, 480) {}
 
@@ -50,6 +58,15 @@ AirPainter::AirPainter(int frameWidth, int frameHeigth)
 	allColor.push_back(oriBlue);
 	allColor.push_back(oriGreen);
 	allColor.push_back(oriYellow);
+	/*
+	namedWindow("test", CV_WINDOW_AUTOSIZE);
+	createTrackbar("highH", "test", &hh, 255);
+	createTrackbar("highS", "test", &hs, 255);
+	createTrackbar("highV", "test", &hv, 255);
+	createTrackbar("lowH", "test", &lh, 255);
+	createTrackbar("lowS", "test", &ls, 255);
+	createTrackbar("lowV", "test", &lv, 255);
+	*/
 }
 
 //convert int to string
@@ -60,24 +77,33 @@ string intToString(int number) {
 	return ss.str();
 }
 
+//set to only able to draw within a certain radius of circle
 bool AirPainter::drawable(int x, int y)
 {
-
+	//cout << x << " " << y << endl;
+	int centerx = 470;
+	int centery = 362;
+	int hypo = (int)sqrt(pow(POSITIVE(centerx - x), 2) + pow(POSITIVE(centery - y), 2));
+	if (hypo > 284)
+	{
+		return false;
+	}
+	return true;
 }
 
 //draw the line on the canvas
 void AirPainter::drawLine(vector<Object> theObjects, Mat &drawingCanvasTemp)
 {
 	for (int i = 0; i < theObjects.size(); i++) {
-		//if (drawable(theObjects.at(i).getXPos(), theObjects.at(i).getYPos()))
-		if (!(theObjects.at(i).getXPos() > FRAME_WIDTH / 2) && !(theObjects.at(i).getYPos() > FRAME_HEIGHT / 2))
+		//if (!(theObjects.at(i).getXPos() > FRAME_WIDTH / 2) && !(theObjects.at(i).getYPos() > FRAME_HEIGHT / 2))
+		if (drawable(theObjects.at(i).getXPos(), theObjects.at(i).getYPos()))
 		{
 			line(
 				drawingCanvas,
 				Point(theObjects.at(i).getXPos(), theObjects.at(i).getYPos()),
 				Point(theObjects.at(i).getXPos(), theObjects.at(i).getYPos()),
 				theObjects.at(i).getColor(),
-				40
+				70
 			);
 		}
 		else
@@ -87,7 +113,7 @@ void AirPainter::drawLine(vector<Object> theObjects, Mat &drawingCanvasTemp)
 				Point(theObjects.at(i).getXPos(), theObjects.at(i).getYPos()),
 				Point(theObjects.at(i).getXPos(), theObjects.at(i).getYPos()),
 				theObjects.at(i).getColor(),
-				40
+				70
 			);
 		}
 	}
@@ -164,7 +190,7 @@ void AirPainter::TrackCircle(Object color, Mat &drawingCanvasTemp)
 	bool objectFound = false;
 	vector<Vec3f> circles;
 	// Apply the Hough Transform to find the circles
-	HoughCircles(threshold, circles, CV_HOUGH_GRADIENT, 1, threshold.rows / 8, 100, 20, 30, 0);
+	HoughCircles(threshold, circles, CV_HOUGH_GRADIENT, 1, threshold.rows / 8, 100, 20, 40, 0);//threshold, circles, CV_HOUGH_GRADIENT, 1, threshold.rows / 8, 100, 20, 40, 0
 	for (size_t i = 0; i < circles.size(); i++)
 	{
 		Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));
@@ -234,8 +260,8 @@ void AirPainter::ColorArea(Object &color)
 	inRange(tmpHsv, color.getHSVminArea(), color.getHSVmaxArea(), tmpThreshold);
 	morphOps(tmpThreshold);
 	Moments moment = moments(tmpThreshold);
-	color.setArea(moment.m00/100);
-	cout << color.getType() << color.getArea() << endl;
+	//imshow(color.getType(), tmpThreshold);
+	color.setArea((moment.m00/10000)/8290*100);
 }
 
 //get the area that the user had drawn
@@ -252,6 +278,7 @@ string AirPainter::getColorArea(string name)
 	return intToString(area);
 }
 
+//reset canvas into blank and area information to 0
 void AirPainter::resetArea_Canvas()
 {
 	for (int i = 0; i < allColor.size(); i++)
@@ -271,40 +298,43 @@ void AirPainter::run()
 			cout << "error taking video" << endl;
 			return;
 		}
-
-		Mat drawingCanvasTemp = Mat::zeros(cameraFeed.size(), CV_8UC3);
-
-		flip(cameraFeed, cameraFeed, 1);
-		src = cameraFeed;
-
-		if (foregroundMask.empty()) {
-			foregroundMask.create(cameraFeed.size(), cameraFeed.type());
-		}
-
-		backgroundFilter();
-
-
-		//convert frame from BGR to HSV colorspace
-		medianBlur(cameraFeed, cameraFeed, 3);
-		cvtColor(cameraFeed, HSV, COLOR_BGR2HSV);
-
-		Object blue("blue"), yellow("yellow"), red("red"), green("green");
-
-		ColorManager(drawingCanvasTemp, yellow);
-		ColorManager(drawingCanvasTemp, green);
-		ColorManager(drawingCanvasTemp, blue);
-		ColorManager(drawingCanvasTemp, red);
-
-		//search for area drawn by the user
-		for (int i = 0; i < allColor.size(); i++)
+		else
 		{
-			ColorArea(allColor[i]);
+			Mat drawingCanvasTemp = Mat::zeros(cameraFeed.size(), CV_8UC3);
+
+			flip(cameraFeed, cameraFeed, 1);
+			src = cameraFeed;
+
+			if (foregroundMask.empty()) {
+				foregroundMask.create(cameraFeed.size(), cameraFeed.type());
+			}
+
+			backgroundFilter();
+
+
+			//convert frame from BGR to HSV colorspace
+			medianBlur(cameraFeed, cameraFeed, 3);
+			cvtColor(cameraFeed, HSV, COLOR_BGR2HSV);
+
+			Object blue("blue"), yellow("yellow"), red("red"), green("green");
+
+			ColorManager(drawingCanvasTemp, yellow);
+			ColorManager(drawingCanvasTemp, green);
+			ColorManager(drawingCanvasTemp, blue);
+			ColorManager(drawingCanvasTemp, red);
+
+			//search for area drawn by the user
+			for (int i = 0; i < allColor.size(); i++)
+			{
+				ColorArea(allColor[i]);
+			}
+
+			drawingCanvasTemp = drawingCanvas + drawingCanvasTemp;
+			showCanvas = drawingCanvasTemp;
+			//imshow("test", showCanvas);
+		
+			imshow("Original Image", cameraFeed);
+		
 		}
 
-		drawingCanvasTemp = drawingCanvas + drawingCanvasTemp;
-		showCanvas = drawingCanvasTemp;
-		//imshow("test", showCanvas);
-		
-		imshow("Original Image", cameraFeed);
-		
 }

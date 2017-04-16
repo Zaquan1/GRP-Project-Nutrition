@@ -72,7 +72,7 @@ void PlayState::update()
 				m_machine.quit();
 				break;
 
-			case sf::Keyboard::M:
+			case sf::Keyboard::P:
 				m_next = StateMachine::build<MenuState>(m_machine, m_window, false);
 				break;
 
@@ -118,8 +118,33 @@ void PlayState::drawInfo()
 {
 	sf::Text info;
 	info.setFont(font);
-	info.setString(airPainter.getColorArea("red"));
+	info.setString(airPainter.getColorArea("red") + "%");
 	info.setPosition(sf::Vector2f(1010, 175));
+	m_window.draw(info);
+	info.setString(airPainter.getColorArea("green") + "%");
+	info.setPosition(sf::Vector2f(1175, 175));
+	m_window.draw(info);
+	info.setString(airPainter.getColorArea("blue") + "%");
+	info.setPosition(sf::Vector2f(1010, 260));
+	m_window.draw(info);
+	info.setString(airPainter.getColorArea("yellow") + "%");
+	info.setPosition(sf::Vector2f(1175, 260));
+	m_window.draw(info);
+	
+	info.setString(pManager.getPeople().getName());
+	info.setPosition(sf::Vector2f(1065, 415));
+	m_window.draw(info);
+	info.setString(pManager.getPeople().getGender());
+	info.setPosition(sf::Vector2f(1065, 465));
+	m_window.draw(info);
+	info.setString(pManager.getPeople().getAge());
+	info.setPosition(sf::Vector2f(1065, 520));
+	m_window.draw(info);
+	info.setString(pManager.getPeople().getJob());
+	info.setPosition(sf::Vector2f(1065, 570));
+	m_window.draw(info);
+	info.setString(pManager.getPeople().getIllness());
+	info.setPosition(sf::Vector2f(1065, 625));
 	m_window.draw(info);
 
 }

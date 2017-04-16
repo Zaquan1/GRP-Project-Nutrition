@@ -12,12 +12,23 @@ People::People(string n, string g, string a, string i, string j,
 	carbs = c;
 	fats = f;
 	fibre = fi;
+	CalculateStatus();
 }
 
 void People::CalculateStatus()
 {
-	
+	int total = protein + carbs + fats + fibre;
+	carbs = intToPercentage(carbs, total);
+	protein = intToPercentage(protein, total);
+	fats = intToPercentage(fats, total);
+	fibre = intToPercentage(fibre, total);
 }
+
+int People::intToPercentage(int a, int total)
+{
+	return (int)((a / total) * 100);
+}
+
 string People::getName() { return name; }
 string People::getGender() { return gender; }
 string People::getAge() { return age; }

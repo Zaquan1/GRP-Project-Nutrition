@@ -2,12 +2,12 @@
 #define ADDSTATE_HPP
 
 #include "State.h"
-#include <iostream>
-#include <fstream>
 
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Texture.hpp>
 #include <TGUI\TGUI.hpp>
+#include <iostream>
+#include <fstream>
 
 
 class StateMachine;
@@ -25,32 +25,40 @@ public:
 	void pause();
 	void resume();
 
-	void submit(tgui::EditBox::Ptr First, tgui::EditBox::Ptr Last, tgui::EditBox::Ptr Gender, tgui::EditBox::Ptr Illness, 
-				tgui::EditBox::Ptr Job, tgui::EditBox::Ptr Carbs, tgui::EditBox::Ptr Fats, tgui::EditBox::Ptr Protein, 
-				tgui::EditBox::Ptr Fiber);
+	void submit(tgui::EditBox::Ptr First, tgui::EditBox::Ptr Age, tgui::EditBox::Ptr Gender, tgui::EditBox::Ptr Illness,
+		tgui::EditBox::Ptr Job, tgui::EditBox::Ptr Carbs, tgui::EditBox::Ptr Fats, tgui::EditBox::Ptr Protein,
+		tgui::EditBox::Ptr Fiber);
 	void loadWidgets(tgui::Gui& gui);
 
 	void update();
 	void draw();
 
+	void isNumber(std::vector <std::string> &num);
+	void isWord(std::vector <std::string> &word);
+
+	void setErrorTextStyle();
+
+	void isValid();
+	void errorPrint();
+
 private:
 
 	sf::Texture m_bgTex;
 	sf::Sprite m_bg;
+	sf::Font font;
+	sf::Text error[9];
+	sf::FloatRect errTextRect;
 	tgui::Gui gui;
 
-	struct Person {
+	std::vector<std::string> v_words;
+	std::vector<std::string> v_nums;
 
-		std::string Name;
-		int Age;
-		std::string Job;
-		std::string Illness;
-		int Carbs;
-		int Fats;
-		int Protein;
-		int Fiber;
-	};
-	
+	bool word_flag[4];
+	bool num_flag[5];
+
+	bool all_words_valid;
+	bool all_num_valid;
+
 };
 
 #endif // !ADDSTATE_HPP

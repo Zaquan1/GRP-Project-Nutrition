@@ -13,6 +13,7 @@ public:
 	int getCarbs();
 	int getFats();
 	int getFibre();
+	int intToPercentage(int a, int total);
 	void status();
 
 	string getName();

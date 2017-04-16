@@ -31,9 +31,9 @@ PeopleManager::PeopleManager()
 				fgets(str, 100, fp);
 				gender = str;
 				fgets(str, 100, fp);
-				job = str;
-				fgets(str, 100, fp);
 				illness = str;
+				fgets(str, 100, fp);
+				job = str;
 				fgets(str, 100, fp);
 				carbs = StringtoInt(str);
 				fgets(str, 100, fp);
@@ -50,6 +50,9 @@ PeopleManager::PeopleManager()
 		} while (fgets(str, 100, fp) != NULL);
 
 		fclose(fp);
+
+		auto engine = std::default_random_engine{};
+		std::shuffle(begin(peoples), end(peoples), engine);
 	}
 }
 
@@ -61,7 +64,16 @@ void PeopleManager::testPurpose()
 		peoples.at(i).status();
 		cout << endl << endl;
 	}
+}
 
+People PeopleManager::getPeople()
+{
+	return peoples.back();
+}
+
+void PeopleManager::removePeople()
+{
+	peoples.pop_back();
 }
 
 int PeopleManager::StringtoInt(string s)

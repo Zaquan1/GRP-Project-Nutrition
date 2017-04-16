@@ -150,7 +150,9 @@
     <Text Include="people.txt" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="img\Add.png" />
     <Image Include="img\Intro_Background.png" />
+    <Image Include="img\play.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
