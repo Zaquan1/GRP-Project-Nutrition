@@ -15,7 +15,7 @@ AddState::AddState(StateMachine& machine, sf::RenderWindow& window, bool replace
 	m_bg.setTexture(m_bgTex, true);
 
 	font.loadFromFile("arial.ttf");
-	
+
 
 	gui.setWindow(m_window);
 
@@ -33,11 +33,11 @@ AddState::AddState(StateMachine& machine, sf::RenderWindow& window, bool replace
 }
 
 void AddState::submit(tgui::EditBox::Ptr First, tgui::EditBox::Ptr Age, tgui::EditBox::Ptr Gender, tgui::EditBox::Ptr Illness,
-					  tgui::EditBox::Ptr Job, tgui::EditBox::Ptr Carbs, tgui::EditBox::Ptr Fats, tgui::EditBox::Ptr Protein,
-					  tgui::EditBox::Ptr Fiber)
+	tgui::EditBox::Ptr Job, tgui::EditBox::Ptr Carbs, tgui::EditBox::Ptr Fats, tgui::EditBox::Ptr Protein,
+	tgui::EditBox::Ptr Fiber)
 {
 
-	
+
 	v_words.clear();
 	v_words.push_back(First->getText().toAnsiString());
 	v_words.push_back(Gender->getText().toAnsiString());
@@ -56,8 +56,8 @@ void AddState::submit(tgui::EditBox::Ptr First, tgui::EditBox::Ptr Age, tgui::Ed
 	isValid();
 
 	setErrorTextStyle();
-	
-	std::ofstream myfile("people.txt", std::ios::app);
+
+	std::ofstream myfile("record.txt", std::ios::app);
 	if (all_words_valid && all_num_valid)
 	{
 		if (myfile.is_open())
@@ -158,8 +158,8 @@ void AddState::loadWidgets(tgui::Gui& gui)
 	gui.add(button);
 
 	button->connect("pressed", &AddState::submit, this, editBoxName, editBoxAge, editBoxGender, editBoxIllness, editBoxJob,
-														editBoxCarbs, editBoxFats, editBoxProtein, editBoxFiber);
-	
+		editBoxCarbs, editBoxFats, editBoxProtein, editBoxFiber);
+
 }
 
 
@@ -188,7 +188,7 @@ void AddState::isWord(std::vector <std::string> &word)
 	{
 		for (unsigned int j = 0; j < word[i].length(); j++)
 		{
-			if (!(word[i][j] > 64 && word[i][j] < 91  || word[i][j] > 96 && word[i][j] < 123))
+			if (!(word[i][j] > 64 && word[i][j] < 91 || word[i][j] > 96 && word[i][j] < 123))
 			{
 				word_flag[i] = false;
 			}
@@ -381,11 +381,11 @@ void AddState::draw()
 
 	m_window.draw(m_bg);
 	gui.draw();
-	
+
 	for (int i = 0; i < 9; i++)
 	{
 		m_window.draw(error[i]);
 	}
-	
+
 	m_window.display();
 }

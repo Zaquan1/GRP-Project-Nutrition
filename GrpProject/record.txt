@@ -1,0 +1,10 @@
+*
+cat fish
+11
+Male
+Mercenary
+kwarshiokor
+1000
+200
+3000
+4000

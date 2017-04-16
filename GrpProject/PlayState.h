@@ -2,9 +2,11 @@
 #define PLAYSTATE_HPP
 
 #include "State.h"
+#include <ctime>
+
 #include "AirPainter.h"
 #include "PeopleManager.h"
-#include <ctime>
+
 #include <SFML\Graphics.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Texture.hpp>
@@ -28,7 +30,6 @@ public:
 	void draw();
 
 private:
-
 	void MattoSprite();
 	void drawInfo();
 	sf::Texture m_bgTex;
@@ -39,8 +40,8 @@ private:
 	sf::Text time_text;
 	sf::FloatRect textRect;
 
-	time_t beginT = NULL;
-	time_t endT = NULL;
+	time_t beginT = time(NULL);
+	time_t endT = time(NULL);
 	int time_f = 0;
 	std::string timer;
 

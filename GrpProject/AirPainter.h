@@ -18,12 +18,13 @@ public:
 	{
 		change = !change;
 	};
+	void resetArea_Canvas();
 
 	Mat getCanvas(){ return showCanvas; };
 
 	string getColorArea(string color);
-	void resetArea_Canvas();
 
+	vector<Object> getAllColor();
 private:
 	
 	Mat cameraFeed;

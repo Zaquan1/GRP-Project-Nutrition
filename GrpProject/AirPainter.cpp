@@ -239,7 +239,7 @@ void AirPainter::ColorManager(Mat &drawingCanvasTemp, Object colorObject)
 	inRange(HSV, colorObject.getHSVmin(), colorObject.getHSVmax(), threshold);
 	morphOps(threshold);
 	GaussianBlur(threshold, threshold, Size(9, 9), 2, 2);
-	imshow(colorObject.getType(), threshold);
+	//imshow(colorObject.getType(), threshold);
 	//convert between 2 different types of tracking
 	if (change)
 	{
@@ -288,6 +288,11 @@ void AirPainter::resetArea_Canvas()
 	drawingCanvas = Mat::zeros(cameraFeed.size(), CV_8UC3);
 }
 
+vector<Object> AirPainter::getAllColor()
+{
+	return allColor;
+}
+
 
 void AirPainter::run()
 {
@@ -333,7 +338,7 @@ void AirPainter::run()
 			showCanvas = drawingCanvasTemp;
 			//imshow("test", showCanvas);
 		
-			imshow("Original Image", cameraFeed);
+			//imshow("Original Image", cameraFeed);
 		
 		}
 

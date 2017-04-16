@@ -1,5 +1,5 @@
 #include "StateMachine.h"
-#include "MenuState.h"
+#include "PauseState.h"
 
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Window/Event.hpp>
@@ -7,17 +7,14 @@
 #include <memory>
 #include <iostream>
 
-MenuState::MenuState(StateMachine& machine, sf::RenderWindow& window, bool replace)
+PauseState::PauseState(StateMachine& machine, sf::RenderWindow& window, bool replace)
 	: State{ machine, window, replace }
 {
-	m_bgTex.loadFromFile("img/menu.png");
+	m_bgTex.loadFromFile("img/pause.png");
 
 	m_bg.setTexture(m_bgTex, true);
 
-	if (!font.loadFromFile("arial.ttf"))
-	{
-		//handle error
-	}
+	font.loadFromFile("arial.ttf");
 
 	menu[0].setFont(font);
 	menu[0].setFillColor(sf::Color::Red);
@@ -36,7 +33,7 @@ MenuState::MenuState(StateMachine& machine, sf::RenderWindow& window, bool repla
 	std::cout << "MenuState Init" << std::endl;
 }
 
-void MenuState::MoveUp()
+void PauseState::MoveUp()
 {
 	if (selectedItemIndex - 1 >= 0)
 	{
@@ -46,7 +43,7 @@ void MenuState::MoveUp()
 	}
 }
 
-void MenuState::MoveDown()
+void PauseState::MoveDown()
 {
 	if (selectedItemIndex + 1 < MAX_NUMBER_OF_ITEMS)
 	{
@@ -56,17 +53,17 @@ void MenuState::MoveDown()
 	}
 }
 
-void MenuState::pause()
+void PauseState::pause()
 {
 	std::cout << "MenuState Pause" << std::endl;
 }
 
-void MenuState::resume()
+void PauseState::resume()
 {
 	std::cout << "MenuState Resume" << std::endl;
 }
 
-void MenuState::update()
+void PauseState::update()
 {
 	sf::Event event;
 
@@ -113,16 +110,17 @@ void MenuState::update()
 	}
 }
 
-void MenuState::draw()
+void PauseState::draw()
 {
 	// Clear the previous drawing
 	m_window.clear();
+	m_window.draw(m_bg);
 
 	for (int i = 0; i < MAX_NUMBER_OF_ITEMS; i++)
 	{
 		m_window.draw(menu[i]);
 	}
 
-//	m_window.draw(m_bg);
+	
 	m_window.display();
 }

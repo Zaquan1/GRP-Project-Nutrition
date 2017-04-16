@@ -38,8 +38,10 @@ private:
 	sf::Texture m_bgTex;
 	sf::Sprite m_bg;
 
-	sf::RectangleShape m_fader;
-	sf::Color m_alpha;
+	sf::Texture m_helpTex;
+	sf::Sprite m_help;
+
+	bool help;
 
 	int selectedItemIndex;
 	sf::Font font;

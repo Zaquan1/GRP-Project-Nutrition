@@ -1,5 +1,8 @@
 #include "People.h"
 
+People::People()
+{}
+
 People::People(string n, string g, string a, string i, string j,
 	int p, int c, int f, int fi)
 {
@@ -15,6 +18,9 @@ People::People(string n, string g, string a, string i, string j,
 	CalculateStatus();
 }
 
+People::~People(void)
+{}
+
 void People::CalculateStatus()
 {
 	int total = protein + carbs + fats + fibre;
@@ -26,7 +32,7 @@ void People::CalculateStatus()
 
 int People::intToPercentage(int a, int total)
 {
-	return (int)((a / total) * 100);
+	return a * 100 / total;
 }
 
 string People::getName() { return name; }

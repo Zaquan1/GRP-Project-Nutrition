@@ -3,7 +3,8 @@
 
 #include "StateMachine.h"
 #include "PlayState.h"
-#include "MenuState.h"
+#include "PauseState.h"
+#include "EndState.h"
 
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Window/Event.hpp>
@@ -11,8 +12,6 @@
 PlayState::PlayState(StateMachine& machine, sf::RenderWindow& window, bool replace)
 	: State{ machine, window, replace }, airPainter(m_window.getSize().x, m_window.getSize().y), pManager()
 {
-
-	//m_bg.setTexture(m_bgTex, true);
 	m_bgTex.loadFromFile("img/play.png");
 
 	m_bg.setTexture(m_bgTex, true);
@@ -36,11 +35,11 @@ void PlayState::resume()
 
 void PlayState::update()
 {
+	sf::Event event;
 	airPainter.run();
 	MattoSprite();
 
-	sf::Event event;
-	if (difftime(endT, beginT) < 2.0f)
+	if (difftime(endT, beginT) < 1.0f)
 	{
 		endT = time(NULL);
 	}
@@ -52,13 +51,20 @@ void PlayState::update()
 		textRect = time_text.getLocalBounds();
 		time_text.setOrigin(textRect.left + textRect.width / 2.0f, textRect.top + textRect.height / 2.0f);
 		time_text.setPosition(sf::Vector2f(840, 689));
-		//std::cout << time_f << std::endl;
+
+
+		std::cout << time_f << std::endl;
 		time_f += 1;
+	}
+
+	if (time_f == 30)
+	{
+		cout << "change" << endl;
+		m_next = StateMachine::build<EndState>(new EndState(m_machine, m_window, false, pManager.getPeople(), airPainter.getAllColor()));
 	}
 
 	while (m_window.pollEvent(event))
 	{
-		
 		switch (event.type)
 		{
 		case sf::Event::Closed:
@@ -73,7 +79,7 @@ void PlayState::update()
 				break;
 
 			case sf::Keyboard::P:
-				m_next = StateMachine::build<MenuState>(m_machine, m_window, false);
+				m_next = StateMachine::build<PauseState>(m_machine, m_window, false);
 				break;
 
 			default:
@@ -103,6 +109,7 @@ void PlayState::MattoSprite()
 	aP.setTexture(aP_Tex, true);
 }
 
+
 void PlayState::draw()
 {
 	// Clear the previous drawing
@@ -130,7 +137,7 @@ void PlayState::drawInfo()
 	info.setString(airPainter.getColorArea("yellow") + "%");
 	info.setPosition(sf::Vector2f(1175, 260));
 	m_window.draw(info);
-	
+
 	info.setString(pManager.getPeople().getName());
 	info.setPosition(sf::Vector2f(1065, 415));
 	m_window.draw(info);

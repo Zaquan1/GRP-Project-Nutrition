@@ -6,6 +6,8 @@ using namespace std;
 class People
 {
 public:
+	People();
+	~People(void);
 	People(string n, string g, string a, string i, string j,
 		int p, int c, int f, int fi);
 

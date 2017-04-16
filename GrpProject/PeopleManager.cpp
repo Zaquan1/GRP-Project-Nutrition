@@ -4,7 +4,7 @@ PeopleManager::PeopleManager()
 {
 	//add none status for both illness and jobs
 
-	const char* filename = "people.txt";
+	const char* filename = "record.txt";
 	FILE *fp;
 	char str[100];
 	errno_t err;

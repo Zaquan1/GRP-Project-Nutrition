@@ -1,5 +1,5 @@
-#ifndef MENUSTATE_HPP
-#define MENUSTATE_HPP
+#ifndef PAUSESTATE_HPP
+#define PAUSESTATE_HPP
 
 #include "State.h"
 
@@ -16,10 +16,10 @@ namespace sf
 	class RenderWindow;
 }
 
-class MenuState : public State
+class PauseState : public State
 {
 public:
-	MenuState(StateMachine& machine, sf::RenderWindow& window, bool replace = true);
+	PauseState(StateMachine& machine, sf::RenderWindow& window, bool replace = true);
 
 	void pause();
 	void resume();
@@ -42,4 +42,4 @@ private:
 
 };
 
-#endif // MENUSTATE_HPP
+#endif // PAUSESTATE_HPP

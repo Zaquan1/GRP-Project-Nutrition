@@ -121,11 +121,12 @@
     <ClCompile Include="AddState.cpp" />
     <ClCompile Include="AirPainter.cpp" />
     <ClCompile Include="Application.cpp" />
+    <ClCompile Include="EndState.cpp" />
     <ClCompile Include="HelpState.cpp" />
     <ClCompile Include="IntroState.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="MenuState.cpp" />
     <ClCompile Include="Object.cpp" />
+    <ClCompile Include="PauseState.cpp" />
     <ClCompile Include="People.cpp" />
     <ClCompile Include="PeopleManager.cpp" />
     <ClCompile Include="PlayState.cpp" />
@@ -136,10 +137,11 @@
     <ClInclude Include="AddState.h" />
     <ClInclude Include="AirPainter.h" />
     <ClInclude Include="Application.h" />
+    <ClInclude Include="EndState.h" />
     <ClInclude Include="HelpState.h" />
     <ClInclude Include="IntroState.h" />
-    <ClInclude Include="MenuState.h" />
     <ClInclude Include="Object.h" />
+    <ClInclude Include="PauseState.h" />
     <ClInclude Include="People.h" />
     <ClInclude Include="PeopleManager.h" />
     <ClInclude Include="PlayState.h" />
@@ -147,7 +149,7 @@
     <ClInclude Include="StateMachine.h" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="people.txt" />
+    <Text Include="record.txt" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="img\Add.png" />

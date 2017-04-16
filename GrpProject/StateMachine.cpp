@@ -61,6 +61,11 @@ void StateMachine::lastState()
 {
 	m_resume = true;
 }
+void StateMachine::lastState(int total)
+{
+	for (int i = 0; i < total; i++)
+		m_states.pop();
+}
 
 void StateMachine::update()
 {

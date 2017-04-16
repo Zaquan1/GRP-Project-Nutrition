@@ -1,6 +1,5 @@
 #include "IntroState.h"
 #include "PlayState.h"
-#include "HelpState.h"
 #include "AddState.h"
 #include "StateMachine.h"
 
@@ -17,10 +16,10 @@ IntroState::IntroState(StateMachine& machine, sf::RenderWindow& window, bool rep
 	m_bgTex.loadFromFile("img/Intro_Background.png");
 	m_bg.setTexture(m_bgTex, true);
 
-	if (!font.loadFromFile("arial.ttf"))
-	{
-		//handle error
-	}
+	m_helpTex.loadFromFile("img/help.png");
+	m_help.setTexture(m_helpTex, true);
+
+	font.loadFromFile("arial.ttf");
 
 	title.setFont(font);
 	title.setFillColor(sf::Color::White);
@@ -54,14 +53,6 @@ IntroState::IntroState(StateMachine& machine, sf::RenderWindow& window, bool rep
 	menu[3].setOrigin(menu[3].getLocalBounds().width / 2.0f, menu[3].getLocalBounds().height / 2.0f);
 
 	selectedItemIndex = 0;
-
-
-	// Start off opaque
-	m_alpha = sf::Color{ 0, 0, 0, 255 };
-
-	// Fill the fader surface with black
-	m_fader.setFillColor(m_alpha);
-	m_fader.setSize(static_cast<sf::Vector2f>(m_bgTex.getSize()));
 
 	std::cout << "IntroState Init" << std::endl;
 }
@@ -115,11 +106,23 @@ void IntroState::update()
 			{
 
 			case sf::Keyboard::Up:
-				MoveUp();
+				if (!help)
+				{
+					MoveUp();
+					break;
+				}
 				break;
 
 			case sf::Keyboard::Down:
-				MoveDown();
+				if (!help)
+				{
+					MoveDown();
+					break;
+				}
+				break;
+
+			case sf::Keyboard::BackSpace:
+				help = false;
 				break;
 
 			case sf::Keyboard::Return:
@@ -130,7 +133,7 @@ void IntroState::update()
 					break;
 
 				case 1:
-					m_next = StateMachine::build<HelpState>(m_machine, m_window, true);
+					help = true;
 					break;
 
 				case 2:
@@ -154,10 +157,6 @@ void IntroState::update()
 		}
 	}
 
-	if (m_alpha.a != 0)
-		m_alpha.a--;
-
-	m_fader.setFillColor(m_alpha);
 }
 
 void IntroState::draw()
@@ -165,19 +164,20 @@ void IntroState::draw()
 	// Clear the previous drawing
 	m_window.clear();
 
-	m_window.draw(m_bg);
-
-	m_window.draw(title);
-
-	for (int i = 0; i < MAX_NUMBER_OF_ITEMS; i++)
+	if (help)
 	{
-		m_window.draw(menu[i]);
+		m_window.draw(m_help);
 	}
-	
+	else
+	{
+		m_window.draw(m_bg);
+		m_window.draw(title);
 
-	// No need to draw if it's transparent
-	if (m_alpha.a != 0)
-		m_window.draw(m_fader);
+		for (int i = 0; i < MAX_NUMBER_OF_ITEMS; i++)
+		{
+			m_window.draw(menu[i]);
+		}
+	}
 
 	m_window.display();
 }
