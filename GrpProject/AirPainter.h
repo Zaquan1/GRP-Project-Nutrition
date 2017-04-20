@@ -18,6 +18,10 @@ public:
 	{
 		change = !change;
 	};
+	void setIgnore(bool set)
+	{
+		ignore = set;
+	}
 	void resetArea_Canvas();
 
 	Mat getCanvas(){ return showCanvas; };
@@ -36,6 +40,7 @@ private:
 	Mat src;
 
 	bool change;
+	bool ignore;
 
 	VideoCapture capture;
 
@@ -52,7 +57,7 @@ private:
 
 	const int MAX_NUM_OBJECTS = 50;
 	//minimum and maximum object area
-	const int MIN_OBJECT_AREA = 1000;
+	const int MIN_OBJECT_AREA = 2000;
 	int MAX_OBJECT_AREA;
 
 	bool drawable(int x, int y);

@@ -1,10 +1,20 @@
 *
-cat fish
-11
+Richard
+35
 Male
-Mercenary
-kwarshiokor
-1000
+Teacher
+Diabetes
+100
+50
 200
-3000
-4000
+400
+*
+Richard
+35
+Male
+Teacher
+Diabetes
+100
+50
+200
+400

@@ -58,15 +58,8 @@ AirPainter::AirPainter(int frameWidth, int frameHeigth)
 	allColor.push_back(oriBlue);
 	allColor.push_back(oriGreen);
 	allColor.push_back(oriYellow);
-	/*
-	namedWindow("test", CV_WINDOW_AUTOSIZE);
-	createTrackbar("highH", "test", &hh, 255);
-	createTrackbar("highS", "test", &hs, 255);
-	createTrackbar("highV", "test", &hv, 255);
-	createTrackbar("lowH", "test", &lh, 255);
-	createTrackbar("lowS", "test", &ls, 255);
-	createTrackbar("lowV", "test", &lv, 255);
-	*/
+
+	ignore = false;
 }
 
 //convert int to string
@@ -96,7 +89,7 @@ void AirPainter::drawLine(vector<Object> theObjects, Mat &drawingCanvasTemp)
 {
 	for (int i = 0; i < theObjects.size(); i++) {
 		//if (!(theObjects.at(i).getXPos() > FRAME_WIDTH / 2) && !(theObjects.at(i).getYPos() > FRAME_HEIGHT / 2))
-		if (drawable(theObjects.at(i).getXPos(), theObjects.at(i).getYPos()))
+		if (drawable(theObjects.at(i).getXPos(), theObjects.at(i).getYPos()) && ignore)
 		{
 			line(
 				drawingCanvas,
@@ -314,6 +307,7 @@ void AirPainter::run()
 				foregroundMask.create(cameraFeed.size(), cameraFeed.type());
 			}
 
+			imshow("Original Image", cameraFeed);
 			backgroundFilter();
 
 
@@ -328,6 +322,7 @@ void AirPainter::run()
 			ColorManager(drawingCanvasTemp, blue);
 			ColorManager(drawingCanvasTemp, red);
 
+			
 			//search for area drawn by the user
 			for (int i = 0; i < allColor.size(); i++)
 			{
@@ -336,9 +331,7 @@ void AirPainter::run()
 
 			drawingCanvasTemp = drawingCanvas + drawingCanvasTemp;
 			showCanvas = drawingCanvasTemp;
-			//imshow("test", showCanvas);
 		
-			//imshow("Original Image", cameraFeed);
 		
 		}
 

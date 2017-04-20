@@ -1,4 +1,5 @@
 #include "PeopleManager.h"
+#include <time.h>
 
 PeopleManager::PeopleManager()
 {
@@ -44,16 +45,21 @@ PeopleManager::PeopleManager()
 				fibre = StringtoInt(str);
 				peoples.push_back(
 					People(name, age, gender, job, illness, 
-						carbs, fats, protein, fibre)
+						protein, carbs, fats, fibre)
 				);
 			}
 		} while (fgets(str, 100, fp) != NULL);
 
 		fclose(fp);
-
-		auto engine = std::default_random_engine{};
-		std::shuffle(begin(peoples), end(peoples), engine);
 	}
+	shufflePeople();
+}
+
+void PeopleManager::shufflePeople()
+{
+		srand(time(NULL));
+		random_shuffle(begin(peoples), end(peoples));
+
 }
 
 void PeopleManager::testPurpose()
@@ -81,4 +87,9 @@ int PeopleManager::StringtoInt(string s)
 	double d;
 	stringstream(s) >> d;
 	return (int) d;
+}
+
+int PeopleManager::peopleLeft()
+{
+	return peoples.size();
 }

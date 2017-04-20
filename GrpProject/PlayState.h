@@ -47,6 +47,9 @@ private:
 
 	AirPainter airPainter;
 	PeopleManager pManager;
+
+	bool modeChange;
+	bool reset;
 };
 
 #endif // PLAYSTATE_HPP

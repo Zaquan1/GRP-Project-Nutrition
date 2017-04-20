@@ -4,7 +4,7 @@
 #include <sstream>
 #include "People.h"
 #include <algorithm>
-#include <random>
+#include <time.h>
 
 
 class PeopleManager 
@@ -12,12 +12,14 @@ class PeopleManager
 public:
 	PeopleManager();
 	void testPurpose();
-	People getPeople();
 	void removePeople();
+	People getPeople();
+	int peopleLeft();
+
 private:
 	std::vector<People> peoples;
 
-	void CreatePeople();
+	void shufflePeople();
 	int StringtoInt(string s);
 	
 };

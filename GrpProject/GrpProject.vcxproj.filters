@@ -22,6 +22,15 @@
     <Filter Include="Source Files\People">
       <UniqueIdentifier>{30281bf4-8c28-4c61-b227-a31577707fd7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\GameState">
+      <UniqueIdentifier>{6af81ef9-74f1-43d0-b498-bb533160eaee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\People">
+      <UniqueIdentifier>{82e65529-393e-4099-843e-898266887ced}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\AirPainting">
+      <UniqueIdentifier>{23d81fe1-80ea-40f7-a8ca-4d1e46d6a878}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AirPainter.cpp">
@@ -51,9 +60,6 @@
     <ClCompile Include="IntroState.cpp">
       <Filter>Source Files\GameState</Filter>
     </ClCompile>
-    <ClCompile Include="HelpState.cpp">
-      <Filter>Source Files\GameState</Filter>
-    </ClCompile>
     <ClCompile Include="Application.cpp">
       <Filter>Source Files\GameState</Filter>
     </ClCompile>
@@ -68,44 +74,41 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Object.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="AirPainter.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="People.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PeopleManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="StateMachine.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="State.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PlayState.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="IntroState.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="HelpState.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Application.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="AddState.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\GameState</Filter>
     </ClInclude>
     <ClInclude Include="EndState.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\GameState</Filter>
+    </ClInclude>
+    <ClInclude Include="IntroState.h">
+      <Filter>Header Files\GameState</Filter>
     </ClInclude>
     <ClInclude Include="PauseState.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\GameState</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayState.h">
+      <Filter>Header Files\GameState</Filter>
+    </ClInclude>
+    <ClInclude Include="State.h">
+      <Filter>Header Files\GameState</Filter>
+    </ClInclude>
+    <ClInclude Include="StateMachine.h">
+      <Filter>Header Files\GameState</Filter>
+    </ClInclude>
+    <ClInclude Include="Application.h">
+      <Filter>Header Files\GameState</Filter>
+    </ClInclude>
+    <ClInclude Include="People.h">
+      <Filter>Header Files\People</Filter>
+    </ClInclude>
+    <ClInclude Include="PeopleManager.h">
+      <Filter>Header Files\People</Filter>
+    </ClInclude>
+    <ClInclude Include="AirPainter.h">
+      <Filter>Header Files\AirPainting</Filter>
+    </ClInclude>
+    <ClInclude Include="Object.h">
+      <Filter>Header Files\AirPainting</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

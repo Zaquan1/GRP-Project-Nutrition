@@ -47,7 +47,7 @@ Object::Object(string name) {
 
 		setHSVminArea(Scalar(20, 124, 123));
 		setHSVmaxArea(Scalar(30, 255, 255));
-		setHSVmin(Scalar(20, 124, 123));
+		setHSVmin(Scalar(20, 100, 100));
 		setHSVmax(Scalar(30, 255, 255));
 
 		//BGR value for yellow:

@@ -8,7 +8,7 @@ class People
 public:
 	People();
 	~People(void);
-	People(string n, string g, string a, string i, string j,
+	People(string n, string a, string g, string i, string j,
 		int p, int c, int f, int fi);
 
 	int getProtein();

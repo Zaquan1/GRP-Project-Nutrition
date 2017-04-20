@@ -21,7 +21,7 @@ public:
 
 	void nextState();
 	void lastState();
-	void lastState(int total);
+	int getStateNum();
 
 	void update();
 	void draw();

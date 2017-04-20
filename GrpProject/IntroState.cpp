@@ -23,7 +23,7 @@ IntroState::IntroState(StateMachine& machine, sf::RenderWindow& window, bool rep
 
 	title.setFont(font);
 	title.setFillColor(sf::Color::White);
-	title.setString("NUTRIGAME");
+	title.setString("NUTRIFILL");
 	title.setPosition(sf::Vector2f(m_window.getSize().x / 2, 40));
 	title.setOrigin(title.getLocalBounds().width / 2.0f, title.getLocalBounds().height / 2.0f);
 

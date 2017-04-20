@@ -3,12 +3,18 @@
 
 #include <iostream>
 #include <memory>
+#include <iostream>
 
 StateMachine::StateMachine()
 	: m_resume{ false }
 	, m_running{ false }
 {
 	std::cout << "StateMachine Init" << std::endl;
+}
+
+int StateMachine::getStateNum()
+{
+	return m_states.size();
 }
 
 void StateMachine::run(std::unique_ptr<State> state)
@@ -36,7 +42,7 @@ void StateMachine::nextState()
 
 		m_resume = false;
 	}
-
+	std::cout << "state size: " << m_states.size() << std::endl;
 	// There needs to be a state
 	if (!m_states.empty())
 	{
@@ -60,11 +66,6 @@ void StateMachine::nextState()
 void StateMachine::lastState()
 {
 	m_resume = true;
-}
-void StateMachine::lastState(int total)
-{
-	for (int i = 0; i < total; i++)
-		m_states.pop();
 }
 
 void StateMachine::update()

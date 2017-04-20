@@ -2,7 +2,7 @@
 #define ENDSTATE_HPP
 
 #include "State.h"
-
+#include <sstream>
 #include "SFML\Graphics.hpp"
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Texture.hpp>
@@ -28,14 +28,23 @@ public:
 
 	void update();
 	void draw();
+	void drawInfo();
 
 private:
 	sf::Texture m_bgTex;
 	sf::Sprite m_bg;
+	sf::Font font;
+
+	time_t beginT = time(NULL);
+	time_t endT = time(NULL);
+	int time_f = 0;
+	std::string timer;
 
 	People person;
 	vector<Object> objects;
 
+	string intToString(int number);
+	string checkResult(int user, int actual);
 };
 
 #endif // ENDSTATE_HPP

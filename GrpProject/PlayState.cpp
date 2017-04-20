@@ -5,6 +5,7 @@
 #include "PlayState.h"
 #include "PauseState.h"
 #include "EndState.h"
+#include "IntroState.h"
 
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Window/Event.hpp>
@@ -18,9 +19,9 @@ PlayState::PlayState(StateMachine& machine, sf::RenderWindow& window, bool repla
 
 	font.loadFromFile("arial.ttf");
 	time_text.setFont(font);
-
+	modeChange = true;
+	reset = false;
 	std::cout << "PlayState Init" << std::endl;
-	pManager.testPurpose();
 }
 
 void PlayState::pause()
@@ -36,59 +37,86 @@ void PlayState::resume()
 void PlayState::update()
 {
 	sf::Event event;
-	airPainter.run();
-	MattoSprite();
-
-	if (difftime(endT, beginT) < 1.0f)
+	if (reset)
 	{
-		endT = time(NULL);
+		airPainter.resetArea_Canvas();
+		pManager.removePeople();
+		time_f = 0;
+		reset = false;
+	}
+	cout << pManager.peopleLeft() << endl;
+	if (pManager.peopleLeft() == 0)
+	{
+		pause();
+		m_next = StateMachine::build<IntroState>(m_machine, m_window, false);
 	}
 	else
 	{
-		beginT = time(NULL);
-		endT = time(NULL);
-		time_text.setString(std::to_string(time_f));
-		textRect = time_text.getLocalBounds();
-		time_text.setOrigin(textRect.left + textRect.width / 2.0f, textRect.top + textRect.height / 2.0f);
-		time_text.setPosition(sf::Vector2f(840, 689));
+		airPainter.run();
+		MattoSprite();
 
-
-		std::cout << time_f << std::endl;
-		time_f += 1;
-	}
-
-	if (time_f == 30)
-	{
-		cout << "change" << endl;
-		m_next = StateMachine::build<EndState>(new EndState(m_machine, m_window, false, pManager.getPeople(), airPainter.getAllColor()));
-	}
-
-	while (m_window.pollEvent(event))
-	{
-		switch (event.type)
+		if (difftime(endT, beginT) < 1.0f)
 		{
-		case sf::Event::Closed:
-			m_machine.quit();
-			break;
+			endT = time(NULL);
+		}
+		else
+		{
+			beginT = time(NULL);
+			endT = time(NULL);
+			time_text.setString(std::to_string(time_f));
+			textRect = time_text.getLocalBounds();
+			time_text.setOrigin(textRect.left + textRect.width / 2.0f, textRect.top + textRect.height / 2.0f);
+			time_text.setPosition(sf::Vector2f(840, 689));
 
-		case sf::Event::KeyPressed:
-			switch (event.key.code)
+
+			std::cout << time_f << std::endl;
+			time_f += 1;
+		}
+		if (time_f < 2)
+		{
+			airPainter.setIgnore(false);
+		}
+		else
+		{
+			airPainter.setIgnore(true);
+		}
+		while (m_window.pollEvent(event))
+		{
+			switch (event.type)
 			{
-			case sf::Keyboard::Escape:
+			case sf::Event::Closed:
 				m_machine.quit();
 				break;
 
-			case sf::Keyboard::P:
-				m_next = StateMachine::build<PauseState>(m_machine, m_window, false);
+			case sf::Event::KeyPressed:
+				switch (event.key.code)
+				{
+				case sf::Keyboard::Escape:
+					m_machine.quit();
+					break;
+
+				case sf::Keyboard::P:
+					m_next = StateMachine::build<PauseState>(m_machine, m_window, false);
+					break;
+
+				case sf::Keyboard::C:
+					airPainter.ChangeDetect();
+					modeChange = !modeChange;
+					break;
+				default:
+					break;
+				}
 				break;
 
 			default:
 				break;
 			}
-			break;
+		}
 
-		default:
-			break;
+		if (time_f > 3)
+		{
+			m_next = StateMachine::build<EndState>(new EndState(m_machine, m_window, false, pManager.getPeople(), airPainter.getAllColor()));
+			reset = true;
 		}
 	}
 }
@@ -141,10 +169,10 @@ void PlayState::drawInfo()
 	info.setString(pManager.getPeople().getName());
 	info.setPosition(sf::Vector2f(1065, 415));
 	m_window.draw(info);
-	info.setString(pManager.getPeople().getGender());
+	info.setString(pManager.getPeople().getAge());
 	info.setPosition(sf::Vector2f(1065, 465));
 	m_window.draw(info);
-	info.setString(pManager.getPeople().getAge());
+	info.setString(pManager.getPeople().getGender());
 	info.setPosition(sf::Vector2f(1065, 520));
 	m_window.draw(info);
 	info.setString(pManager.getPeople().getJob());
@@ -154,4 +182,17 @@ void PlayState::drawInfo()
 	info.setPosition(sf::Vector2f(1065, 625));
 	m_window.draw(info);
 
+	info.setString("C to change filter mode: ");
+	info.setPosition(sf::Vector2f(10, 685));
+	m_window.draw(info);
+	if (modeChange)
+	{
+		info.setString("Circle Detect");
+	}
+	else
+	{
+		info.setString("Color Detect");
+	}
+	info.setPosition(sf::Vector2f(340, 685));
+	m_window.draw(info);
 }
