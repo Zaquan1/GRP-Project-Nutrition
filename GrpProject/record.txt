@@ -1,13 +1,15 @@
-*
-Richard
-35
-Male
-Teacher
-Diabetes
-100
-50
-200
-400
+save the file in this format, add the star without the bracket
+(*)
+name
+age
+sex
+job
+illness
+carbs
+fats
+protein
+fibre
+
 *
 Richard
 35
