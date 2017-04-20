@@ -27,11 +27,12 @@ EndState::EndState(StateMachine& machine, sf::RenderWindow& window, bool replace
 	
 }
 
-EndState::EndState(StateMachine& machine, sf::RenderWindow& window, bool replace, People p, vector<Object> o)
+EndState::EndState(StateMachine& machine, sf::RenderWindow& window, bool replace, People p, vector<Object> o, int l)
 	:EndState(machine, window, replace)
 {
 	objects = o;
 	person = p;
+	left = l;
 	person.status();
 	for (int i = 0; i < objects.size(); i++)
 		cout << objects.at(i).getArea();
@@ -50,7 +51,7 @@ void EndState::resume()
 
 void EndState::update()
 {
-	//people.status();
+
 	sf::Event event;
 
 	if (difftime(endT, beginT) < 1.0f)
@@ -65,9 +66,16 @@ void EndState::update()
 		time_f += 1;
 	}
 
-	if (time_f == 3)
+	if (time_f == 10)
 	{
-		m_machine.lastState();
+		if (left == 1)
+		{
+			m_next = StateMachine::build<IntroState>(m_machine, m_window, false);
+		}
+		else
+		{
+			m_machine.lastState();
+		}
 	}
 
 	while (m_window.pollEvent(event))

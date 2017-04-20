@@ -307,7 +307,6 @@ void AirPainter::run()
 				foregroundMask.create(cameraFeed.size(), cameraFeed.type());
 			}
 
-			imshow("Original Image", cameraFeed);
 			backgroundFilter();
 
 
@@ -332,6 +331,7 @@ void AirPainter::run()
 			drawingCanvasTemp = drawingCanvas + drawingCanvasTemp;
 			showCanvas = drawingCanvasTemp;
 		
+			//imshow("Original Image", cameraFeed);
 		
 		}
 

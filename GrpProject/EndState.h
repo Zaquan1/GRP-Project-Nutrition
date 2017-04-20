@@ -21,7 +21,7 @@ class EndState : public State
 public:
 	EndState(StateMachine& machine, sf::RenderWindow& window, bool replace = false);
 
-	EndState(StateMachine& machine, sf::RenderWindow& window, bool replace, People p, vector<Object> o);
+	EndState(StateMachine& machine, sf::RenderWindow& window, bool replace, People p, vector<Object> o, int left);
 
 	void pause();
 	void resume();
@@ -37,8 +37,9 @@ private:
 
 	time_t beginT = time(NULL);
 	time_t endT = time(NULL);
-	int time_f = 0;
 	std::string timer;
+	int time_f = 0;
+	int left;
 
 	People person;
 	vector<Object> objects;

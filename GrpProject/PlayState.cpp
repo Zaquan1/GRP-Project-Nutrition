@@ -113,9 +113,9 @@ void PlayState::update()
 			}
 		}
 
-		if (time_f > 3)
+		if (time_f > 60)
 		{
-			m_next = StateMachine::build<EndState>(new EndState(m_machine, m_window, false, pManager.getPeople(), airPainter.getAllColor()));
+			m_next = StateMachine::build<EndState>(new EndState(m_machine, m_window, false, pManager.getPeople(), airPainter.getAllColor(), pManager.peopleLeft()));
 			reset = true;
 		}
 	}
